@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif; }
+        
         :root {
             --bg-primary: linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 50%, #0d1a3a 100%);
             --bg-card: rgba(255,255,255,0.05);
@@ -18,76 +18,366 @@
             --btn-danger: linear-gradient(135deg, #ff0050, #ff0080);
             --text: #fff;
         }
-        body { background: var(--bg-primary); min-height: 100vh; color: var(--text); padding-bottom: 75px; }
+        
+        body { background: var(--bg-primary); min-height: 100vh; color: var(--text); padding-bottom: 75px; transition: all 0.3s ease; }
+        
+        body.ramadhan {
+            --bg-primary: linear-gradient(135deg, #0a2e1a 0%, #1a4a2e 50%, #0d2a1a 100%);
+            --border: rgba(255,215,0,0.3);
+            --accent: #FFD700;
+            --accent-grad: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        
+        body.lebaran {
+            --bg-primary: linear-gradient(135deg, #1a2e3a 0%, #2a4a3e 50%, #1a3a2a 100%);
+            --border: rgba(76,175,80,0.3);
+            --accent: #4CAF50;
+            --accent-grad: linear-gradient(135deg, #4CAF50, #8BC34A);
+        }
+        
+        .maintenance-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #0a0a2e, #1a1a2e); z-index: 99999;
+            align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px;
+        }
+        .maintenance-overlay.active { display: flex; }
+        .maintenance-overlay i { font-size: 80px; color: #FFD700; margin-bottom: 20px; }
+        
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .main-tab { display: none; animation: fadeIn 0.3s ease; }
+        .main-tab.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px);} to { opacity: 1; transform: translateY(0);} }
+        
         .card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 25px; padding: 25px; margin-bottom: 25px; border: 1px solid var(--border); }
         .card h2 { margin-bottom: 20px; display: flex; align-items: center; gap: 12px; font-size: 22px; }
-        .input-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-        .url-input { width: 100%; padding: 14px 18px; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 15px; color: white; font-size: 14px; outline: none; }
-        .btn { padding: 12px 20px; background: var(--btn-danger); border: none; border-radius: 15px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 20, 30, 0.95); 
+            backdrop-filter: blur(15px); display: flex; justify-content: flex-start; align-items: center; 
+            padding: 8px 10px 18px; z-index: 2000; border-top: 1px solid var(--border);
+            overflow-x: auto; white-space: nowrap; gap: 5px;
+        }
+        .nav-item {
+            flex-shrink: 0; display: inline-flex; flex-direction: column; align-items: center;
+            gap: 4px; background: transparent; border: none; color: #888; font-size: 10px;
+            cursor: pointer; padding: 5px 12px; border-radius: 30px; min-width: 65px; transition: all 0.3s;
+        }
+        .nav-item.active { color: var(--accent); background: rgba(0,242,254,0.1); }
+        
+        .profile-card { 
+            background: linear-gradient(135deg, rgba(255,0,80,0.15), rgba(0,242,254,0.1)); 
+            border-radius: 25px; padding: 20px; margin-bottom: 20px; backdrop-filter: blur(10px); 
+            border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; 
+            justify-content: space-between; flex-wrap: wrap; gap: 15px; transition: all 0.3s;
+        }
+        
+        .btn { padding: 12px 20px; background: var(--btn-danger); border: none; border-radius: 15px; color: white; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.3s; }
         .btn-secondary { background: var(--accent-grad); color: #1a1a2e; }
+        .btn-outline { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-premium { background: linear-gradient(135deg, #FFD700, #FFA500); color: #1a1a2e; }
+
+        .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .url-input, .file-input, .login-input { flex: 1; padding: 14px 18px; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 15px; color: white; font-size: 14px; outline: none; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: rgba(255,255,255,0.08); border-radius: 15px; padding: 15px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: bold; color: var(--accent); }
+        
+        .result-box { background: rgba(0,0,0,0.4); border-radius: 20px; padding: 25px; margin-top: 25px; display: none; border: 1px solid var(--border); }
+        .result-box.active { display: block; }
+        
+        .gallery-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; max-height: 500px; overflow-y: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 20px; }
+        .gallery-item { position: relative; cursor: pointer; border-radius: 15px; overflow: hidden; border: 2px solid transparent; transition: all 0.3s; background: rgba(0,0,0,0.5); }
+        .gallery-item img { width: 100%; height: 180px; object-fit: cover; display: block; }
+
+        
+        .ban-popup-overlay, .winner-popup-overlay, .kontak-popup, .dashboard-modal, .premium-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 10001; align-items: center; justify-content: center;
+        }
+        .ban-popup-overlay.active, .winner-popup-overlay.active, .kontak-popup.active, .dashboard-modal.active, .premium-modal.active { display: flex; }
+        .popup-content { background: linear-gradient(135deg, #1a1a3a, #0d1a3a); border-radius: 30px; width: 90%; max-width: 400px; padding: 30px; text-align: center; border: 2px solid var(--accent); }
+
+        .user-id-display { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 10px 15px; margin: 15px 0; display: flex; align-items: center; justify-content: space-between; border-left: 3px solid var(--accent); }
+        .user-id-value { font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold; color: var(--accent); }
+        
+        .toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #1a1a2e; padding: 12px 24px; border-radius: 40px; z-index: 9999; font-weight: bold; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
     </style>
 </head>
 <body>
 
+<div id="maintenanceOverlay" class="maintenance-overlay">
+    <i class="fas fa-tools"></i>
+    <h1>Sedang dalam Perbaikan</h1>
+    <p>WaterTik sedang dalam masa maintenance.<br>Mohon maaf atas ketidaknyamanannya.</p>
+</div>
+
+<div class="bottom-nav">
+    <button class="nav-item active" onclick="switchMainTab('home')"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="nav-item" onclick="switchMainTab('generator')"><i class="fas fa-images"></i><span>Generator</span></button>
+    <button class="nav-item" onclick="switchMainTab('audio')"><i class="fas fa-music"></i><span>MP3</span></button>
+    <button class="nav-item" onclick="switchMainTab('menu4')"><i class="fas fa-tasks"></i><span>Misi</span></button>
+    <button class="nav-item" onclick="switchMainTab('menu5')"><i class="fas fa-crown"></i><span>Premium</span></button>
+    <button class="nav-item" onclick="switchMainTab('riwayat')"><i class="fas fa-history"></i><span>Riwayat</span></button>
+    <button class="nav-item" onclick="switchMainTab('informasi')"><i class="fas fa-info-circle"></i><span>Info</span></button>
+    <button class="nav-item" onclick="switchMainTab('akun')"><i class="fas fa-user"></i><span>Akun</span></button>
+</div>
+
 <div class="container">
-    <br>
-    
-    <div class="card">
-        <h2><i class="fas fa-exclamation-triangle"></i> Lapor Masalah</h2>
-        <form id="formLaporan">
-            <div class="input-group">
-                <input type="text" id="nama" class="url-input" placeholder="Nama Anda" required>
-                <input type="text" id="masalah" class="url-input" placeholder="Apa masalahnya?" required>
-                <input type="text" id="lokasi" class="url-input" placeholder="Lokasi/Halaman mana?" required>
-                <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Kirim Laporan</button>
+   
+    <div id="ramadhanHeader" class="card" style="text-align: center; border-color: var(--accent);">
+        <i class="fas fa-moon" style="font-size: 24px; color: var(--accent);"></i>
+        <div id="ramadhanStatus">Memeriksa status...</div>
+        <div id="ramadhanCountdown" class="stat-number" style="font-size: 20px;"></div>
+    </div>
+
+   
+    <div id="homeTab" class="main-tab active">
+        <div class="profile-card" onclick="switchMainTab('akun')">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div id="avatarDisplay" style="width: 60px; height: 60px; border-radius: 50%; background: var(--accent-grad); display: flex; align-items: center; justify-content: center; overflow: hidden;"><i class="fas fa-user" style="font-size: 25px;"></i></div>
+                <div>
+                    <h3 id="userNameDisplay">Guest</h3>
+                    <p id="userJoinDateDisplay" style="font-size: 12px; color: #aaa;">Belum login</p>
+                </div>
             </div>
-        </form>
+            <i class="fas fa-chevron-right" style="color: var(--accent);"></i>
+        </div>
+
+        <div class="card">
+            <h2><i class="fab fa-tiktok"></i> TikTok Downloader</h2>
+            <div class="input-group">
+                <input type="text" id="tiktokUrl" class="url-input" placeholder="Tempel link TikTok...">
+                <button class="btn btn-secondary" onclick="downloadVideo()"><i class="fas fa-download"></i> Download</button>
+            </div>
+            <div id="videoResult" class="result-box">
+                <div id="videoPreviewArea">
+                    <img id="videoThumb" src="" style="width: 100%; border-radius: 15px; margin-bottom: 15px;">
+                    <h3 id="videoTitle">Judul</h3>
+                    <div class="action-buttons" style="margin-top: 15px; display: flex; gap: 10px;">
+                        <a href="#" id="downloadLink" class="btn" download>UNDUH HD</a>
+                        <button class="btn btn-outline" onclick="resetVideoForm()">ULANG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     
-    <div class="card">
-        <h2><i class="fab fa-tiktok"></i> TikTok Downloader</h2>
-        <div class="input-group">
-            <input type="text" id="tiktokUrl" class="url-input" placeholder="Tempel link TikTok...">
-            <button class="btn btn-secondary">Download Video</button>
+    <div id="generatorTab" class="main-tab">
+        <div class="card">
+            <h2><i class="fas fa-images"></i> Generator Foto</h2>
+            <div class="input-group">
+                <input type="text" id="watermarkUrl" class="url-input" placeholder="Link TikTok untuk Slide/Thumbnail...">
+                <button class="btn btn-secondary" onclick="generateWatermark()">Thumbnail</button>
+                <button class="btn" onclick="generateMultipleFrames()">Ambil Slide</button>
+            </div>
+            <div id="framesGallery" class="gallery-container"></div>
+        </div>
+    </div>
+    
+    >
+    <div id="akunTab" class="main-tab">
+        <div class="card">
+            <h2><i class="fas fa-user-circle"></i> Akun Saya</h2>
+            <div id="loginSection">
+                <input type="text" id="loginName" class="login-input" placeholder="Masukkan nama...">
+                <button class="btn btn-secondary" onclick="attemptLogin()" style="width: 100%; margin-top: 10px;">Login / Daftar</button>
+            </div>
+            <div id="userInfoSection" style="display:none;">
+                <div class="user-id-display">
+                    <span class="user-id-value" id="akunUserIdValue">-</span>
+                    <button class="btn btn-outline" style="padding: 5px 10px;" onclick="copyUserId()">Copy ID</button>
+                </div>
+                <button class="btn btn-danger" onclick="logout()" style="width: 100%;">Keluar</button>
+            </div>
         </div>
     </div>
 </div>
 
-<script>
-    
-    const SUPABASE_URL = 'https://rhvatyydmkveoymcchhu.supabase.co'; 
-    const SUPABASE_KEY = 'sb_publishable_yD81l2Fmp0mIQQ3CCgyVdQ_UtOsFSUw'; 
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    
-    document.getElementById('formLaporan').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        
-        const btn = event.target.querySelector('button');
-        btn.disabled = true;
-        btn.innerText = 'Mengirim...';
-
-        const nama = document.getElementById('nama').value;
-        const masalah = document.getElementById('masalah').value;
-        const lokasi = document.getElementById('lokasi').value;
-
-        const { data, error } = await _supabase
-            .from('laporan')
-            .insert([{ nama, masalah, lokasi, status: 'Pending' }]);
-
-        if (error) {
-            alert('Gagal: ' + error.message);
-        } else {
-            alert('Laporan berhasil dikirim!');
-            document.getElementById('formLaporan').reset();
-        }
-        
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Laporan';
-    });
-</script>
 
 </body>
 </html>
+<script>
+
+const SUPABASE_URL = 'https://rhvatyydmkveoymcchhu.supabase.co/rest/v1/';
+const SUPABASE_KEY = 'sb_publishable_yD81l2Fmp0mIQQ3CCgyVdQ_UtOsFSUw';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+let currentUser = null;
+let appMode = 'normal'; 
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkDeviceStatus();
+    loadUserData();
+    updateRamadhanUI();
+    setInterval(updateRamadhanUI, 60000); 
+});
+
+
+function generateUniqueId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let id = 'WT-';
+    for(let i = 0; i < 8; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+}
+
+async function attemptLogin() {
+    const name = document.getElementById('loginName').value.trim();
+    if (!name) return showToast("Masukkan nama Anda!");
+
+    let userId = localStorage.getItem('watertik_id') || generateUniqueId();
+    
+ 
+    const { data, error } = await supabase
+        .from('users')
+        .upsert({ 
+            user_id: userId, 
+            name: name, 
+            last_login: new Date(),
+            points: 0 
+        })
+        .select();
+
+    if (!error) {
+        localStorage.setItem('watertik_id', userId);
+        localStorage.setItem('watertik_name', name);
+        showToast("Login Berhasil!");
+        loadUserData();
+    } else {
+        showToast("Gagal terhubung ke server.");
+    }
+}
+
+function loadUserData() {
+    const userId = localStorage.getItem('watertik_id');
+    const name = localStorage.getItem('watertik_name');
+
+    if (userId) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('userInfoSection').style.display = 'block';
+        document.getElementById('userNameDisplay').innerText = name;
+        document.getElementById('akunUserIdValue').innerText = userId;
+        document.getElementById('userJoinDateDisplay').innerText = "ID: " + userId;
+    }
+}
+
+-
+function updateRamadhanUI() {
+    const now = new Date();
+    const month = now.getMonth(); 
+    const date = now.getDate();
+    
+    const statusEl = document.getElementById('ramadhanStatus');
+    const countdownEl = document.getElementById('ramadhanCountdown');
+    const body = document.body;
+
+    
+    if (year === 2027) {
+        
+        if ((month === 1 && date >= 8) || (month === 2 && date <= 8)) {
+            appMode = 'ramadhan';
+            body.className = 'ramadhan';
+            statusEl.innerText = "Marhaban ya Ramadhan 2027 🌙";
+        } 
+        
+        else if (month === 2 && (date === 9 || date === 10)) {
+            appMode = 'lebaran';
+            body.className = 'lebaran';
+            statusEl.innerText = "Selamat Idul Fitri 1448H 🕌";
+        } 
+        
+        else {
+            appMode = 'normal';
+            body.className = '';
+            statusEl.innerText = "WaterTik - Video Downloader";
+        }
+    } else {
+        appMode = 'normal';
+        body.className = '';
+        statusEl.innerText = "WaterTik - Video Downloader";
+    }
+}
+
+async function downloadVideo() {
+    const url = document.getElementById('tiktokUrl').value;
+    if (!url) return showToast("Masukkan Link TikTok!");
+
+    showToast("Memproses video...");
+    
+    try {
+        
+        const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+        const result = await response.json();
+
+        if (result.data) {
+            const data = result.data;
+            document.getElementById('videoThumb').src = data.cover;
+            document.getElementById('videoTitle').innerText = data.title || "Video TikTok";
+            document.getElementById('downloadLink').href = data.play; // Link video tanpa watermark
+            document.getElementById('videoResult').classList.add('active');
+            showToast("Video ditemukan!");
+        } else {
+            showToast("Gagal mengambil video. Pastikan link benar.");
+        }
+    } catch (e) {
+        showToast("Terjadi kesalahan koneksi.");
+    }
+}
+
+
+async function generateWatermark() {
+    const url = document.getElementById('watermarkUrl').value;
+    if (!url) return showToast("Masukkan Link!");
+
+    showToast("Mengambil data gambar...");
+   
+}
+
+
+function switchMainTab(tabName) {
+    document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    const targetTab = document.getElementById(tabName + 'Tab');
+    if (targetTab) targetTab.classList.add('active');
+    
+   
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        if (item.onclick.toString().includes(tabName)) item.classList.add('active');
+    });
+}
+
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+function copyUserId() {
+    const id = document.getElementById('akunUserIdValue').innerText;
+    navigator.clipboard.writeText(id);
+    showToast("ID Berhasil disalin!");
+}
+
+function logout() {
+    localStorage.clear();
+    location.reload();
+}
+
+async function checkDeviceStatus() {
+    
+    const { data } = await supabase.from('settings').select('value').eq('key', 'maintenance').single();
+    if (data && data.value === 'true') {
+        document.getElementById('maintenanceOverlay').classList.add('active');
+    }
+}
+</script>
