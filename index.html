@@ -5,6 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>WaterTik - Misi Ramadhan</title>
+
+    <style>
+        .floating-report {
+    position: fixed;
+    bottom: 90px; 
+    right: 20px;
+    width: 55px;
+    height: 55px;
+    background: #38bdf8;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    cursor: pointer;
+    z-index: 999; 
+    transition: transform 0.3s ease;
+        }
+        .floating-report:active {
+            transform: scale(0.9);
+        }
+        .report-content {
+            background: #1e293b;
+            width: 85%;
+            max-width: 350px;
+            margin: 150px auto;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" ></script>
     <script>
@@ -302,14 +335,15 @@
         .winner-popup-overlay, 
         .kontak-popup, 
         .dashboard-modal, 
-        .premium-modal {
+        .premium-modal,
+        .report-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.25);
             z-index: 1000;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -317,6 +351,8 @@
             justify-content: center;
             animation: fadeIn 0.3s ease;
         }
+        .premium-modal { z-index: 1000; }
+        .report-modal { z-index: 1001; }
         .ban-popup-overlay.active, .winner-popup-overlay.active, .kontak-popup.active, .dashboard-modal.active, .premium-modal.active { display: flex; }
         .ban-popup-content, .winner-popup-content, .popup-content {
             background: linear-gradient(135deg, #1a1a3a, #0d1a3a);
@@ -416,6 +452,26 @@
 </head>
 <body>
 
+<div class="floating-report" onclick="toggleReportModal()">
+    <i class="fas fa-headset"></i> 
+</div>
+
+<div id="reportModal" class="report-modal">
+    <div class="report-content">
+        <div class="report-header">
+            <h4>Kirim Laporan</h4>
+            <span class="close-btn" onclick="toggleReportModal()">&times;</span>
+        </div>
+        <select id="tipeLaporan" class="report-input">
+            <option value="Bug">Bug/Error</option>
+            <option value="Premium">Masalah Premium</option>
+            <option value="Saran">Saran</option>
+        </select>
+        <textarea id="isiLaporan" class="report-input" placeholder="Apa yang bisa kami bantu?"></textarea>
+        <button class="btn-send" onclick="kirimLaporan()">Kirim Laporan</button>
+    </div>
+</div>
+    
 <div id="maintenanceOverlay" class="maintenance-overlay">
     <i class="fas fa-tools"></i>
     <h1>Sedang dalam Perbaikan</h1>
@@ -1314,6 +1370,8 @@
             recordFailedAttempt();
             return;
         }
+
+
         
         let existingUser = users.find(u => u.fingerprint === fingerprint);
         
@@ -1825,7 +1883,43 @@
         if(e.target === document.getElementById('premiumModal')) closePremiumModal();
         if(e.target === document.getElementById('winnerPopup')) closeWinnerPopup();
         if(e.target === document.getElementById('banReasonPopup')) closeBanPopup();
+
+async function kirimLaporan() {
+    const tipe = document.getElementById('tipeLaporan').value;
+    const isi = document.getElementById('isiLaporan').value;
+
+    if (!isi) {
+        alert("Isi laporan tidak boleh kosong!");
+        return;
+    }
+
+    const { data, error } = await supabase
+        .from('laporan') 
+        .insert([
+            { 
+                tipe_laporan: tipe, 
+                isi_pesan: isi
+            }
+        ]);
+
+    if (error) {
+        alert("Gagal mengirim: " + error.message);
+    } else {
+        alert("Laporan dikirim! Admin akan segera cek.");
+        document.getElementById('isiLaporan').value = ""; 
+    }
+}
+        
     };
+
+    function toggleReportModal() {
+    const modal = document.getElementById('reportModal');
+    if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+    } else {
+        modal.style.display = 'block';
+    }
+}
 </script>
 </body>
 </html>
