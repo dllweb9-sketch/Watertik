@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -5,7 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>WaterTik - Misi Ramadhan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" ></script>
+    <script>
+        const SUPABASE_URL = 'https://rhvatyydmkveoymcchhu.supabase.co/rest/v1/';
+        const SUPABASE_KEY = 'sb_publishable_yD81l2Fmp0mIQQ3CCgyVdQ_UtOsFSUw';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function kirimLaporan(event) {
+            event.preventDefault();
+            const nama = document.getElementById('nama').value;
+            const masalah = document.getElementById('masalah').value;
+            const lokasi = document.getElementById('lokasi').value;
+            const { data, error } = await supabase
+      .from('laporan')
+      .insert([
+        { nama: nama, masalah: masalah, lokasi: lokasi, status: 'Pending' }
+      ]);
+            document.getElementById('formLaporan').addEventListener('submit', kirimLaporan);
+
+    if (error) {
+      alert('Gagal mengirim: ' + error.message);
+    } else {
+      alert('Laporan berhasil dikirim!');
+      document.getElementById('formLaporan').reset();
+    }
+  }
+            
+    </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif; }
         
@@ -36,12 +63,24 @@
         }
         
         .maintenance-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #0a0a2e, #1a1a2e); z-index: 99999;
-            align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px;
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a2e, #1a1a2e);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
         }
         .maintenance-overlay.active { display: flex; }
         .maintenance-overlay i { font-size: 80px; color: #FFD700; margin-bottom: 20px; }
+        .maintenance-overlay h1 { font-size: 28px; margin-bottom: 10px; }
+        .maintenance-overlay p { color: #aaa; margin-bottom: 20px; }
         
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         .main-tab { display: none; animation: fadeIn 0.3s ease; }
@@ -52,61 +91,327 @@
         .card h2 { margin-bottom: 20px; display: flex; align-items: center; gap: 12px; font-size: 22px; }
         
         .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 20, 30, 0.95); 
-            backdrop-filter: blur(15px); display: flex; justify-content: flex-start; align-items: center; 
-            padding: 8px 10px 18px; z-index: 2000; border-top: 1px solid var(--border);
-            overflow-x: auto; white-space: nowrap; gap: 5px;
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: rgba(10, 20, 30, 0.95); 
+            backdrop-filter: blur(15px); 
+            display: flex; 
+            justify-content: flex-start; 
+            align-items: center; 
+            padding: 8px 10px 18px; 
+            z-index: 2000; 
+            border-top: 1px solid var(--border);
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            gap: 5px;
         }
+        .bottom-nav::-webkit-scrollbar { height: 3px; }
+        .bottom-nav::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .bottom-nav::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
         .nav-item {
-            flex-shrink: 0; display: inline-flex; flex-direction: column; align-items: center;
-            gap: 4px; background: transparent; border: none; color: #888; font-size: 10px;
-            cursor: pointer; padding: 5px 12px; border-radius: 30px; min-width: 65px; transition: all 0.3s;
+            flex-shrink: 0;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 30px;
+            min-width: 65px;
+            transition: all 0.3s;
         }
+        .nav-item i { font-size: 20px; }
         .nav-item.active { color: var(--accent); background: rgba(0,242,254,0.1); }
+        body.ramadhan .nav-item.active { background: rgba(255,215,0,0.1); }
         
         .profile-card { 
             background: linear-gradient(135deg, rgba(255,0,80,0.15), rgba(0,242,254,0.1)); 
-            border-radius: 25px; padding: 20px; margin-bottom: 20px; backdrop-filter: blur(10px); 
-            border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; 
-            justify-content: space-between; flex-wrap: wrap; gap: 15px; transition: all 0.3s;
+            border-radius: 25px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            backdrop-filter: blur(10px); 
+            border: 1px solid var(--border); 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+            transition: all 0.3s;
         }
+        .profile-card:hover { transform: translateY(-2px); background: linear-gradient(135deg, rgba(255,0,80,0.25), rgba(0,242,254,0.2)); }
+        body.ramadhan .profile-card { background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(0,242,254,0.1)); }
+        .profile-info { display: flex; align-items: center; gap: 15px; }
+        .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--accent-grad); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 28px; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-text h3 { font-size: 18px; margin-bottom: 5px; }
+        .profile-text p { font-size: 12px; color: #aaa; }
+        .profile-stats-mini { display: flex; gap: 25px; }
+        .profile-stats-mini .stat-item { text-align: center; }
+        .profile-stats-mini .number { font-size: 20px; font-weight: bold; color: var(--accent); }
+        .profile-stats-mini .label { font-size: 10px; color: #aaa; }
         
         .btn { padding: 12px 20px; background: var(--btn-danger); border: none; border-radius: 15px; color: white; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.3s; }
         .btn-secondary { background: var(--accent-grad); color: #1a1a2e; }
         .btn-outline { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
         .btn-premium { background: linear-gradient(135deg, #FFD700, #FFA500); color: #1a1a2e; }
-
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
         .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
         .url-input, .file-input, .login-input { flex: 1; padding: 14px 18px; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 15px; color: white; font-size: 14px; outline: none; }
+        .url-input:focus { border-color: var(--accent); }
         
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
         .stat-card { background: rgba(255,255,255,0.08); border-radius: 15px; padding: 15px; text-align: center; }
         .stat-number { font-size: 28px; font-weight: bold; color: var(--accent); }
         
+        .video-preview { display: grid; grid-template-columns: 200px 1fr; gap: 25px; }
+        @media (max-width: 600px) { .video-preview { grid-template-columns: 1fr; } }
+        .thumbnail img { width: 100%; border-radius: 18px; background: #1a1a2e; }
+        .info-detail { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; margin: 15px 0; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .info-row:last-child { border-bottom: none; }
+        .quality-buttons { display: flex; gap: 12px; margin: 15px 0; }
+        .quality-btn { padding: 8px 20px; background: rgba(255,255,255,0.1); border: 1px solid #333; border-radius: 30px; color: #aaa; cursor: pointer; }
+        .quality-btn.active { background: var(--accent-grad); color: white; border: none; }
+        .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
+        
         .result-box { background: rgba(0,0,0,0.4); border-radius: 20px; padding: 25px; margin-top: 25px; display: none; border: 1px solid var(--border); }
         .result-box.active { display: block; }
         
-        .gallery-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; max-height: 500px; overflow-y: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 20px; }
-        .gallery-item { position: relative; cursor: pointer; border-radius: 15px; overflow: hidden; border: 2px solid transparent; transition: all 0.3s; background: rgba(0,0,0,0.5); }
-        .gallery-item img { width: 100%; height: 180px; object-fit: cover; display: block; }
-
+        .gallery-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 15px; 
+            margin-top: 20px; 
+            max-height: 500px; 
+            overflow-y: auto; 
+            padding: 15px; 
+            background: rgba(0,0,0,0.3); 
+            border-radius: 20px; 
+        }
+        .gallery-item { 
+            position: relative; 
+            cursor: pointer; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            border: 2px solid transparent; 
+            transition: all 0.3s; 
+            background: rgba(0,0,0,0.5); 
+        }
+        .gallery-item:hover { border-color: var(--accent); transform: scale(1.02); }
+        .gallery-item img { width: 100%; height: 180px; object-fit: cover; display: block; background: #1a1a2e; }
+        .frame-time { 
+            position: absolute; top: 8px; left: 8px; 
+            background: rgba(0,0,0,0.7); padding: 4px 10px; 
+            border-radius: 20px; font-size: 11px; color: var(--accent); 
+        }
+        .frame-name { text-align: center; padding: 8px; background: rgba(0,0,0,0.5); font-size: 12px; }
+        .download-single { 
+            position: absolute; bottom: 45px; right: 8px; 
+            background: rgba(0,0,0,0.7); border-radius: 50%; 
+            width: 32px; height: 32px; display: flex; 
+            align-items: center; justify-content: center; cursor: pointer; 
+        }
+        .download-single:hover { background: var(--accent); color: #1a1a2e; }
         
-        .ban-popup-overlay, .winner-popup-overlay, .kontak-popup, .dashboard-modal, .premium-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 10001; align-items: center; justify-content: center;
+        .audio-player { background: rgba(0,0,0,0.3); border-radius: 60px; padding: 15px 20px; margin: 20px 0; }
+        .audio-player audio { width: 100%; }
+        .mp3-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 15px; }
+        .mp3-info-card { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; text-align: center; }
+        .mp3-info-card .label { font-size: 10px; color: #aaa; margin-bottom: 5px; }
+        .mp3-info-card .value { font-size: 14px; font-weight: bold; color: var(--accent); }
+        
+        .watermark-image { max-width: 100%; max-height: 350px; border-radius: 18px; margin: 15px auto; display: block; border: 2px solid var(--border); cursor: pointer; }
+        
+        .mission-progress { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+        .progress-container { background: rgba(255,255,255,0.1); border-radius: 10px; height: 20px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { background: var(--accent-grad); width: 0%; height: 100%; transition: width 0.3s; }
+        .mission-status { display: flex; justify-content: space-between; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 15px; }
+        
+        .mission-countdown, .mission-lebaran, .mission-disabled { text-align: center; padding: 40px 20px; border-radius: 20px; background: rgba(0,0,0,0.3); }
+        .mission-countdown i, .mission-lebaran i, .mission-disabled i { font-size: 48px; margin-bottom: 15px; }
+        
+        .ramadhan-header { border-radius: 20px; padding: 15px; margin-bottom: 20px; text-align: center; background: var(--bg-card); border: 1px solid var(--border); }
+        .ramadhan-countdown { font-size: 20px; font-weight: bold; color: var(--accent); }
+        .ramadhan-message { font-size: 14px; margin-top: 5px; }
+        
+        .ad-container { background: rgba(0,0,0,0.5); border-radius: 15px; padding: 15px; margin: 15px 0; text-align: center; border: 1px dashed var(--accent); }
+        .ad-container.hidden { display: none; }
+        
+        .winners-list {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .winner-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .winner-item:last-child { border-bottom: none; }
+        .winner-rank-1 { color: #FFD700; font-weight: bold; }
+        .winner-rank-2 { color: #C0C0C0; font-weight: bold; }
+        .winner-rank-3 { color: #CD7F32; font-weight: bold; }
+        .winner-name { font-size: 14px; }
+        .winner-prize-badge { font-size: 12px; background: rgba(255,215,0,0.2); padding: 2px 8px; border-radius: 20px; }
+        
+        .prize-info {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .prize-1 { color: #FFD700; font-size: 16px; font-weight: bold; }
+        .prize-2 { color: #C0C0C0; font-size: 14px; font-weight: bold; }
+        .prize-3 { color: #CD7F32; font-size: 14px; font-weight: bold; }
+        
+        .captcha-container {
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .captcha-input {
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            margin: 10px;
+            width: 100px;
+        }
+        .rate-limit-warning {
+            background: rgba(255,0,80,0.2);
+            border: 1px solid #ff0050;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            color: #ff0050;
+        }
+        
+        .ban-popup-overlay, 
+        .winner-popup-overlay, 
+        .kontak-popup, 
+        .dashboard-modal, 
+        .premium-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
         }
         .ban-popup-overlay.active, .winner-popup-overlay.active, .kontak-popup.active, .dashboard-modal.active, .premium-modal.active { display: flex; }
-        .popup-content { background: linear-gradient(135deg, #1a1a3a, #0d1a3a); border-radius: 30px; width: 90%; max-width: 400px; padding: 30px; text-align: center; border: 2px solid var(--accent); }
-
-        .user-id-display { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 10px 15px; margin: 15px 0; display: flex; align-items: center; justify-content: space-between; border-left: 3px solid var(--accent); }
-        .user-id-value { font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold; color: var(--accent); }
-
-        .main-tab { display: none; animation: fadeIn 0.3s ease; }
-        .main-tab.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px);} to { opacity: 1; transform: translateY(0);} }
+        .ban-popup-content, .winner-popup-content, .popup-content {
+            background: linear-gradient(135deg, #1a1a3a, #0d1a3a);
+            border-radius: 30px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid var(--accent);
+            animation: bounceIn 0.5s ease;
+        }
+        body.ramadhan .ban-popup-content, body.ramadhan .winner-popup-content, body.ramadhan .popup-content { background: linear-gradient(135deg, #1a2e1a, #0d2a1a); }
+        .ban-popup-content { border-color: #ff0050; }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
         
-        .toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #1a1a2e; padding: 12px 24px; border-radius: 40px; z-index: 9999; font-weight: bold; animation: slideUp 0.3s ease; }
+        .payment-item { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .copy-btn { background: rgba(255,255,255,0.2); border: none; border-radius: 8px; padding: 5px 12px; color: white; cursor: pointer; font-size: 12px; }
+        .copy-btn:hover { background: var(--accent); color: #1a1a2e; }
+        .wa-contact { background: rgba(37,211,102,0.15); border: 1px solid #25D366; border-radius: 60px; padding: 12px 18px; margin: 15px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+        .wa-button-popup { background: #25D366; padding: 8px 18px; border-radius: 30px; color: white; text-decoration: none; }
+        .close-popup { background: #ff0050; padding: 10px 20px; border: none; border-radius: 30px; color: white; cursor: pointer; margin-top: 15px; }
+        
+        .toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #1a1a2e; padding: 12px 24px; border-radius: 40px; z-index: 9999; font-weight: bold; white-space: nowrap; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        .loading { text-align: center; padding: 30px; display: none; }
+        .footer { text-align: center; padding: 20px; margin-top: 30px; color: #888; font-size: 12px; }
+        .info-list { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; }
+        .info-item { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 12px; }
+        .info-item i { width: 30px; color: var(--accent); }
+        .history-list { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; max-height: 400px; overflow-y: auto; }
+        .history-item { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-top: 15px; }
+        .feature-card { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; text-align: center; transition: all 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.1); }
+        .feature-card i { font-size: 28px; color: var(--accent); margin-bottom: 10px; }
+        .user-info { background: rgba(0,242,254,0.1); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; }
+        body.ramadhan .user-info { background: rgba(255,215,0,0.1); }
+        .avatar-preview { width: 100px; height: 100px; border-radius: 50%; background: var(--accent-grad); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 40px; }
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .multiple-buttons { display: flex; gap: 12px; justify-content: center; margin: 20px 0 10px; }
+        .loading-small { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--accent); border-radius: 50%; border-top-color: transparent; animation: spin 0.6s linear infinite; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .user-id-display {
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            padding: 10px 15px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-left: 3px solid var(--accent);
+        }
+        .user-id-label {
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-id-value {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.5);
+            padding: 6px 12px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+        }
+        .copy-id-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+        .copy-id-btn:hover {
+            background: var(--accent);
+            color: #1a1a2e;
+        }
+        .btn-disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -115,267 +420,1412 @@
     <i class="fas fa-tools"></i>
     <h1>Sedang dalam Perbaikan</h1>
     <p>WaterTik sedang dalam masa maintenance.<br>Mohon maaf atas ketidaknyamanannya.</p>
+    <p>Kembali lagi nanti ya! 🌙</p>
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-item active" onclick="switchMainTab('home')"><i class="fas fa-home"></i><span>Home</span></button>
-    <button class="nav-item" onclick="switchMainTab('generator')"><i class="fas fa-images"></i><span>Generator</span></button>
-    <button class="nav-item" onclick="switchMainTab('audio')"><i class="fas fa-music"></i><span>MP3</span></button>
-    <button class="nav-item" onclick="switchMainTab('menu4')"><i class="fas fa-tasks"></i><span>Misi</span></button>
-    <button class="nav-item" onclick="switchMainTab('menu5')"><i class="fas fa-crown"></i><span>Premium</span></button>
-    <button class="nav-item" onclick="switchMainTab('riwayat')"><i class="fas fa-history"></i><span>Riwayat</span></button>
-    <button class="nav-item" onclick="switchMainTab('informasi')"><i class="fas fa-info-circle"></i><span>Info</span></button>
-    <button class="nav-item" onclick="switchMainTab('akun')"><i class="fas fa-user"></i><span>Akun</span></button>
+    <button class="nav-item active" data-nav="home" onclick="switchMainTab('home')"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="nav-item" data-nav="generator" onclick="switchMainTab('generator')"><i class="fas fa-images"></i><span>Generator</span></button>
+    <button class="nav-item" data-nav="audio" onclick="switchMainTab('audio')"><i class="fas fa-music"></i><span>MP3</span></button>
+    <button class="nav-item" data-nav="menu4" onclick="switchMainTab('menu4')"><i class="fas fa-tasks"></i><span>Misi</span></button>
+    <button class="nav-item" data-nav="menu5" onclick="switchMainTab('menu5')"><i class="fas fa-crown"></i><span>Premium</span></button>
+    <button class="nav-item" data-nav="riwayat" onclick="switchMainTab('riwayat')"><i class="fas fa-history"></i><span>Riwayat</span></button>
+    <button class="nav-item" data-nav="informasi" onclick="switchMainTab('informasi')"><i class="fas fa-info-circle"></i><span>Info</span></button>
+    <button class="nav-item" data-nav="akun" onclick="switchMainTab('akun')"><i class="fas fa-user"></i><span>Akun</span></button>
 </div>
 
 <div class="container">
-   
-    <div id="ramadhanHeader" class="card" style="text-align: center; border-color: var(--accent);">
-        <i class="fas fa-moon" style="font-size: 24px; color: var(--accent);"></i>
-        <div id="ramadhanStatus">Memeriksa status...</div>
-        <div id="ramadhanCountdown" class="stat-number" style="font-size: 20px;"></div>
+    <div id="ramadhanHeader" class="ramadhan-header">
+        <i class="fas fa-moon" style="font-size: 24px;"></i>
+        <div id="ramadhanStatus" class="ramadhan-message"><span class="loading-small"></span> Memeriksa status...</div>
+        <div id="ramadhanCountdown" class="ramadhan-countdown"></div>
     </div>
 
-   
+    <!-- HOME TAB -->
     <div id="homeTab" class="main-tab active">
-        <div class="profile-card" onclick="switchMainTab('akun')">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div id="avatarDisplay" style="width: 60px; height: 60px; border-radius: 50%; background: var(--accent-grad); display: flex; align-items: center; justify-content: center; overflow: hidden;"><i class="fas fa-user" style="font-size: 25px;"></i></div>
-                <div>
+        <div class="profile-card" onclick="openDashboard()">
+            <div class="profile-info">
+                <div class="profile-avatar" id="avatarDisplay"><i class="fas fa-user"></i></div>
+                <div class="profile-text">
                     <h3 id="userNameDisplay">Guest</h3>
-                    <p id="userJoinDateDisplay" style="font-size: 12px; color: #aaa;">Belum login</p>
+                    <p id="userJoinDateDisplay"><i class="fas fa-calendar-alt"></i> Belum login</p>
                 </div>
             </div>
+            <div class="profile-stats-mini">
+                <div class="stat-item"><div class="number" id="miniDownloads">0</div><div class="label">Downloads</div></div>
+                <div class="stat-item"><div class="number" id="miniMP3">0</div><div class="label">MP3</div></div>
+                <div class="stat-item"><div class="number" id="miniPremium">✗</div><div class="label">Premium</div></div>
+            </div>
             <i class="fas fa-chevron-right" style="color: var(--accent);"></i>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number" id="statToday">0</div><div class="stat-label">Hari Ini</div></div>
+            <div class="stat-card"><div class="stat-number" id="statTotalMP3">0</div><div class="stat-label">Total MP3</div></div>
+            <div class="stat-card"><div class="stat-number" id="statMisi">0</div><div class="stat-label">Misi Selesai</div></div>
+        </div>
+
+        <div id="adContainer" class="ad-container">
+            <i class="fas fa-ad"></i> Iklan - Upgrade ke Premium untuk bebas iklan!
+            <div style="font-size:12px; margin-top:10px;">✨ Premium hanya Rp10.000/bulan ✨</div>
         </div>
 
         <div class="card">
             <h2><i class="fab fa-tiktok"></i> TikTok Downloader</h2>
             <div class="input-group">
                 <input type="text" id="tiktokUrl" class="url-input" placeholder="Tempel link TikTok...">
-                <button class="btn btn-secondary" onclick="downloadVideo()"><i class="fas fa-download"></i> Download</button>
+                <button class="btn btn-secondary" onclick="pasteLinkToInput('tiktokUrl')"><i class="fas fa-paste"></i> Paste</button>
+                <button class="btn btn-outline" onclick="clearLink()"><i class="fas fa-trash"></i> Hapus</button>
+                <button class="btn" id="downloadBtn" onclick="downloadVideo()"><i class="fas fa-download"></i> Download</button>
             </div>
+            <div id="videoLoading" class="loading"><i class="fas fa-spinner fa-spin"></i> Memproses...</div>
             <div id="videoResult" class="result-box">
-                <div id="videoPreviewArea">
-                    <img id="videoThumb" src="" style="width: 100%; border-radius: 15px; margin-bottom: 15px;">
-                    <h3 id="videoTitle">Judul</h3>
-                    <div class="action-buttons" style="margin-top: 15px; display: flex; gap: 10px;">
-                        <a href="#" id="downloadLink" class="btn" download>UNDUH HD</a>
-                        <button class="btn btn-outline" onclick="resetVideoForm()">ULANG</button>
+                <div class="result-header" style="display:flex;justify-content:space-between;margin-bottom:20px;">
+                    <span class="result-title"><i class="fas fa-check-circle"></i> Video Siap Diunduh!</span>
+                    <span class="result-badge" style="background:var(--accent);padding:5px 12px;border-radius:20px;">HD Quality</span>
+                </div>
+                <div class="video-preview">
+                    <div class="thumbnail"><img id="videoThumb" src=""></div>
+                    <div>
+                        <h3 id="videoTitle">Judul Video</h3>
+                        <div class="info-detail">
+                            <div class="info-row"><span><i class="fas fa-user"></i> Pembuat</span><span id="videoAuthor">@user</span></div>
+                            <div class="info-row"><span><i class="fas fa-clock"></i> Durasi</span><span id="videoDuration">0:00</span></div>
+                            <div class="info-row"><span><i class="fas fa-calendar"></i> Tanggal Upload</span><span id="videoDate">-</span></div>
+                            <div class="info-row"><span><i class="fas fa-tag"></i> Kualitas</span><span id="videoQuality">HD (720p)</span></div>
+                            <div class="info-row"><span><i class="fas fa-database"></i> Ukuran</span><span id="videoSize">-</span></div>
+                        </div>
+                        <div class="quality-buttons">
+                            <button class="quality-btn active" onclick="selectQuality('hd')">HD (720p)</button>
+                            <button class="quality-btn" onclick="selectQuality('sd')">SD (480p)</button>
+                        </div>
+                        <div class="action-buttons">
+                            <a href="#" id="downloadLink" class="btn" download><i class="fas fa-download"></i> DOWNLOAD VIDEO</a>
+                            <button class="btn btn-outline" onclick="clearLinkAndReset()"><i class="fas fa-redo"></i> Download Lainnya</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="card">
+            <h2><i class="fas fa-star"></i> Fitur Unggulan</h2>
+            <div class="features-grid">
+                <div class="feature-card"><i class="fas fa-shield-alt"></i><h4>Aman & Bebas Virus</h4><p>100% aman</p></div>
+                <div class="feature-card"><i class="fas fa-infinity"></i><h4>Tanpa Batas</h4><p>Download unlimited</p></div>
+                <div class="feature-card"><i class="fas fa-watermark"></i><h4>Tanpa Watermark</h4><p>Video bersih original</p></div>
+                <div class="feature-card"><i class="fas fa-trophy"></i><h4>Misi Ramadhan</h4><p>Dapatkan Rp50.000!</p></div>
+            </div>
+        </div>
     </div>
 
-    
+    <!-- GENERATOR TAB -->
     <div id="generatorTab" class="main-tab">
         <div class="card">
             <h2><i class="fas fa-images"></i> Generator Foto</h2>
+            <p style="margin-bottom:15px;color:#aaa;">Masukkan link TikTok untuk mengambil thumbnail atau slide foto original (max 9 gambar)</p>
             <div class="input-group">
-                <input type="text" id="watermarkUrl" class="url-input" placeholder="Link TikTok untuk Slide/Thumbnail...">
-                <button class="btn btn-secondary" onclick="generateWatermark()">Thumbnail</button>
-                <button class="btn" onclick="generateMultipleFrames()">Ambil Slide</button>
+                <input type="text" id="watermarkUrl" class="url-input" placeholder="Link TikTok...">
+                <button class="btn btn-secondary" onclick="pasteLinkToInput('watermarkUrl')"><i class="fas fa-paste"></i> Paste</button>
+                <button class="btn" id="thumbBtn" onclick="generateWatermark()"><i class="fas fa-magic"></i> Ambil Thumbnail</button>
+                <button class="btn btn-secondary" id="multiBtn" onclick="generateMultipleFrames()"><i class="fas fa-images"></i> Ambil Slide Foto (Max 9)</button>
             </div>
-            <div id="framesGallery" class="gallery-container"></div>
+            <div id="watermarkLoading" class="loading"><i class="fas fa-spinner fa-spin"></i> Mengambil gambar...</div>
+            <div id="multiFrameLoading" style="display:none;">
+                <div><i class="fas fa-spinner fa-spin"></i> <span id="multiFrameStatusText">Mengambil slide gambar...</span></div>
+                <div class="progress-container"><div id="multiFrameProgress" class="progress-bar"></div></div>
+            </div>
+            <div id="watermarkResult" class="result-box">
+                <img id="watermarkImage" class="watermark-image" style="display:none;">
+                <div id="watermarkButtons" style="display:none;justify-content:center;gap:12px;margin-top:15px;">
+                    <button class="btn" onclick="downloadSingleImage()"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-secondary" onclick="copyWatermarkLink()"><i class="fas fa-copy"></i> Copy Link</button>
+                </div>
+            </div>
+            <div id="multipleFramesResult" class="result-box">
+                <div class="result-header" style="display:flex;justify-content:space-between;margin-bottom:15px;">
+                    <span class="result-title"><i class="fas fa-images"></i> Slide Gambar Original</span>
+                    <span class="result-badge" id="frameCount" style="background:var(--accent);padding:5px 12px;border-radius:20px;">0 Gambar</span>
+                </div>
+                <div id="framesGallery" class="gallery-container"></div>
+                <div class="multiple-buttons">
+                    <button class="btn" onclick="downloadAllFrames()"><i class="fas fa-download"></i> Download Semua</button>
+                    <button class="btn btn-outline" onclick="closeMultipleFrames()"><i class="fas fa-times"></i> Tutup</button>
+                </div>
+            </div>
         </div>
     </div>
-    
-    >
+
+    <!-- AUDIO TAB -->
+    <div id="audioTab" class="main-tab">
+        <div class="card">
+            <h2><i class="fas fa-music"></i> Convert ke MP3</h2>
+            <div class="input-group">
+                <input type="file" id="videoFileInput" class="file-input" accept="video/*" onchange="handleVideoSelect()">
+                <button class="btn" id="mp3Btn" onclick="convertToMP3()"><i class="fas fa-file-audio"></i> Convert ke MP3</button>
+            </div>
+            <div id="mp3Loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Mengkonversi...</div>
+            <div id="mp3Result" class="result-box">
+                <div class="result-header" style="display:flex;justify-content:space-between;margin-bottom:20px;">
+                    <span class="result-title"><i class="fas fa-check-circle"></i> MP3 Siap!</span>
+                    <span class="result-badge" style="background:var(--accent);padding:5px 12px;border-radius:20px;">MP3 Audio</span>
+                </div>
+                <div class="mp3-info-grid">
+                    <div class="mp3-info-card"><div class="label"><i class="fas fa-file"></i> Nama File</div><div class="value" id="mp3FileName">-</div></div>
+                    <div class="mp3-info-card"><div class="label"><i class="fas fa-database"></i> Ukuran</div><div class="value" id="mp3FileSize">-</div></div>
+                    <div class="mp3-info-card"><div class="label"><i class="fas fa-clock"></i> Durasi</div><div class="value" id="mp3Duration">-</div></div>
+                    <div class="mp3-info-card"><div class="label"><i class="fas fa-music"></i> Format</div><div class="value">MP3 Audio</div></div>
+                </div>
+                <div class="audio-player"><audio id="audioPreview" controls></audio></div>
+                <div class="action-buttons">
+                    <a href="#" id="mp3DownloadLink" class="btn" download><i class="fas fa-download"></i> DOWNLOAD MP3</a>
+                    <button class="btn btn-outline" onclick="resetMP3()"><i class="fas fa-redo"></i> Convert Lainnya</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU 4 - MISI TAB -->
+    <div id="menu4Tab" class="main-tab">
+        <div class="card">
+            <h2><i class="fas fa-tasks"></i> Misi Ramadhan <span id="premiumMissionBadge" class="premium-badge" style="font-size:12px;margin-left:10px;background:var(--accent);padding:4px 12px;border-radius:20px;">Free</span></h2>
+            
+            <div id="winnersListArea" class="winners-list">
+                <h3 style="margin-bottom:10px;"><i class="fas fa-trophy"></i> Daftar Pemenang</h3>
+                <div id="winnersListContainer">
+                    <div style="text-align:center;padding:10px;color:#aaa;">Belum ada pemenang</div>
+                </div>
+            </div>
+            
+            <div id="missionCountdownArea" class="mission-countdown" style="display:none;">
+                <i class="fas fa-hourglass-half"></i>
+                <h3>🌙 Menunggu Bulan Ramadhan 🌙</h3>
+                <p>Misi Ramadhan akan segera hadir!</p>
+                <div id="countdownTimer" style="font-size: 24px; font-weight: bold; color: var(--accent); margin: 15px 0;"></div>
+                <div class="prize-info">
+                    <div class="prize-1">🏆 JUARA 1: Rp50.000 🏆</div>
+                    <div class="prize-2">🥈 JUARA 2: Rp20.000 🥈</div>
+                    <div class="prize-3">🥉 JUARA 3: Rp10.000 🥉</div>
+                    <div style="font-size:11px; margin-top:5px;">⚡ First Come First Served ⚡</div>
+                </div>
+            </div>
+
+            <div id="missionActiveArea" style="display:none;">
+                <div class="prize-info">
+                    <div class="prize-1">🏆 JUARA 1: Rp50.000 🏆</div>
+                    <div class="prize-2">🥈 JUARA 2: Rp20.000 🥈</div>
+                    <div class="prize-3">🥉 JUARA 3: Rp10.000 🥉</div>
+                    <div style="font-size:11px; margin-top:5px;">⚡ First Come First Served (3 pemenang) ⚡</div>
+                </div>
+                <p style="margin-bottom:15px;">🌙 Selamat menjalankan ibadah puasa! Selesaikan misi untuk mendapatkan hadiah!</p>
+                
+                <div class="mission-progress">
+                    <h3>Progres Misi Kamu:</h3>
+                    <div class="mission-status"><span><i class="fas fa-video"></i> Download Video (100x)</span><span id="videoCount">0</span><span>/100</span></div>
+                    <div class="mission-status"><span><i class="fas fa-images"></i> Generator Foto (100x)</span><span id="photoCount">0</span><span>/100</span></div>
+                    <div class="mission-status"><span><i class="fas fa-music"></i> Convert MP3 (10x)</span><span id="mp3Count">0</span><span>/10</span></div>
+                    <div class="progress-container"><div id="missionProgressBar" class="progress-bar"></div></div>
+                    <div id="missionStatusText" style="text-align:center;margin-top:10px;">Belum mulai misi</div>
+                </div>
+
+                <div id="missionWinnerInfo" style="background:rgba(0,242,254,0.1);border-radius:15px;padding:15px;margin-top:15px;">
+                    <p><i class="fas fa-trophy"></i> <strong>Info Hadiah:</strong></p>
+                    <p>🏆 Juara 1 (pertama selesai): <strong>Rp50.000</strong></p>
+                    <p>🥈 Juara 2 (kedua selesai): <strong>Rp20.000</strong></p>
+                    <p>🥉 Juara 3 (ketiga selesai): <strong>Rp10.000</strong></p>
+                    <p>📞 Hubungi admin via WhatsApp untuk klaim hadiah!</p>
+                </div>
+
+                <button id="claimMissionBtn" class="btn btn-premium" style="width:100%;margin-top:15px;display:none;" onclick="claimMission()"><i class="fas fa-gift"></i> Klaim Hadiah Sekarang!</button>
+            </div>
+
+            <div id="missionLebaranArea" class="mission-lebaran" style="display:none;">
+                <i class="fas fa-star-and-crescent"></i>
+                <h3>🌙 Taqabbalallahu minna wa minkum 🌙</h3>
+                <p>Mohon maaf lahir dan batin</p>
+                <p style="margin-top:15px;">Misi Ramadhan telah berakhir. Sampai jumpa tahun depan!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU 5 - PREMIUM TAB -->
+    <div id="menu5Tab" class="main-tab">
+        <div class="card">
+            <h2><i class="fas fa-crown"></i> WaterTik Premium</h2>
+            <div style="text-align:center;padding:20px;">
+                <i class="fas fa-gem" style="font-size:60px;color:#FFD700;"></i>
+                <h3 style="margin:15px 0;">Upgrade ke Premium!</h3>
+                <p>Nikmati bebas iklan dan fitur eksklusif lainnya.</p>
+                <div style="background:rgba(255,215,0,0.1);border-radius:20px;padding:20px;margin:15px 0;">
+                    <p><i class="fas fa-check-circle" style="color:#FFD700;"></i> Bebas Iklan</p>
+                    <p><i class="fas fa-check-circle" style="color:#FFD700;"></i> Prioritas Misi</p>
+                    <p><i class="fas fa-check-circle" style="color:#FFD700;"></i> Support Pengembang</p>
+                </div>
+                <p style="font-size:24px;font-weight:bold;color:#FFD700;">Hanya Rp10.000/bulan</p>
+                <button class="btn btn-premium" onclick="openPremiumModal()"><i class="fas fa-shopping-cart"></i> Beli Premium Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIWAYAT TAB -->
+    <div id="riwayatTab" class="main-tab">
+        <div class="card">
+            <h2><i class="fas fa-history"></i> Riwayat</h2>
+            <div id="historyList" class="history-list"><div style="text-align:center;padding:40px;"><i class="fas fa-inbox"></i> Belum ada riwayat</div></div>
+        </div>
+    </div>
+
+    <!-- INFORMASI TAB -->
+    <div id="informasiTab" class="main-tab">
+        <div class="card">
+            <h2><i class="fas fa-info-circle"></i> Informasi</h2>
+            <div class="info-list">
+                <div class="info-item"><i class="fas fa-code"></i> <span>WaterTik v4.0</span></div>
+                <div class="info-item"><i class="fas fa-user"></i> <span>Creator: Fikri</span></div>
+                <div class="info-item"><i class="fas fa-calendar"></i> <span>Ramadhan 2026</span></div>
+                <div class="info-item"><i class="fas fa-shield-alt"></i> <span>Keamanan: 100%</span></div>
+                <div class="info-item"><i class="fas fa-moon"></i> <span>Status: <span id="ramadhanInfoStatus">-</span></span></div>
+                <div class="info-item"><i class="fab fa-whatsapp"></i> <span>Admin: 089699024654</span></div>
+            </div>
+            
+            <div id="infoUserIdContainer" style="margin-top: 20px; display: none;">
+                <div class="user-id-display">
+                    <div class="user-id-label">
+                        <i class="fas fa-id-card"></i>
+                        <strong>ID User</strong>
+                    </div>
+                    <div class="user-id-value" id="infoUserIdValue">-</div>
+                    <button class="copy-id-btn" onclick="copyUserId()"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AKUN TAB -->
     <div id="akunTab" class="main-tab">
         <div class="card">
             <h2><i class="fas fa-user-circle"></i> Akun Saya</h2>
             <div id="loginSection">
+                <div id="rateLimitWarning" class="rate-limit-warning" style="display:none;">
+                    <i class="fas fa-hourglass-half"></i> Terlalu banyak percobaan login. Silahkan coba lagi dalam <span id="rateLimitTimer">5</span> menit.
+                </div>
+                <div id="captchaLoginDiv" class="captcha-container" style="display:none;">
+                    <p><i class="fas fa-shield-alt"></i> Verifikasi Keamanan</p>
+                    <p id="captchaQuestionLogin">Berapa 5 + 3?</p>
+                    <input type="text" id="captchaAnswerLogin" class="captcha-input" placeholder="Jawaban">
+                    <button class="btn btn-secondary" onclick="verifyCaptchaAndLogin()">Verifikasi</button>
+                </div>
                 <input type="text" id="loginName" class="login-input" placeholder="Masukkan nama...">
-                <button class="btn btn-secondary" onclick="attemptLogin()" style="width: 100%; margin-top: 10px;">Login / Daftar</button>
+                <button class="login-btn" onclick="attemptLogin()" style="width:100%;padding:14px;background:var(--accent-grad);border:none;border-radius:15px;color:#1a1a2e;font-weight:bold;cursor:pointer;margin-bottom:10px;">Login / Daftar</button>
+                <button class="btn btn-outline" onclick="openKontakPopup()" style="width:100%;"><i class="fab fa-whatsapp"></i> Hubungi Admin</button>
             </div>
             <div id="userInfoSection" style="display:none;">
-                <div class="user-id-display">
-                    <span class="user-id-value" id="akunUserIdValue">-</span>
-                    <button class="btn btn-outline" style="padding: 5px 10px;" onclick="copyUserId()">Copy ID</button>
+                <div class="user-info">
+                    <div class="avatar-preview" id="avatarPreviewDash"><i class="fas fa-user"></i></div>
+                    <h3 id="loggedUserName">User</h3>
+                    <p>Status: <span id="userPremiumStatus">Free User</span></p>
+                    <p>Premium EXP: <span id="userPremiumExpiry">-</span></p>
+                    <p>Bergabung: <span id="loggedJoinDate">-</span></p>
                 </div>
-                <button class="btn btn-danger" onclick="logout()" style="width: 100%;">Keluar</button>
+                
+                <div class="user-id-display">
+                    <div class="user-id-label">
+                        <i class="fas fa-id-card"></i>
+                        <strong>ID User</strong>
+                    </div>
+                    <div class="user-id-value" id="akunUserIdValue">-</div>
+                    <button class="copy-id-btn" onclick="copyUserId()"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-number" id="akunDownloads">0</div><div class="stat-label">Downloads</div></div>
+                    <div class="stat-card"><div class="stat-number" id="akunMP3">0</div><div class="stat-label">MP3</div></div>
+                    <div class="stat-card"><div class="stat-number" id="akunMisi">0</div><div class="stat-label">Misi</div></div>
+                </div>
+                <button class="btn btn-secondary" onclick="openDashboard()" style="width:100%;margin-bottom:10px;">Edit Avatar</button>
+                <button class="btn btn-outline" onclick="openKontakPopup()" style="width:100%;margin-bottom:10px;"><i class="fab fa-whatsapp"></i> Hubungi Admin</button>
+                <button class="btn btn-premium" onclick="openPremiumModal()" style="width:100%;"><i class="fas fa-crown"></i> Upgrade Premium</button>
             </div>
         </div>
     </div>
+
+    <div class="footer"><p>© 2026 WaterTik | Created by <strong>Fikri</strong> | <span id="currentDate"></span></p></div>
 </div>
 
+<!-- POPUP MODALS -->
+<div id="banReasonPopup" class="ban-popup-overlay">
+    <div class="ban-popup-content">
+        <i class="fas fa-ban" style="font-size: 48px; color: #ff0050; margin-bottom: 15px;"></i>
+        <h2 style="color: #ff0050;">⚠️ AKUN DIBLOKIR ⚠️</h2>
+        <div id="banReasonText" style="margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 10px;">
+            Alasan tidak tersedia
+        </div>
+        <p>Akun Anda tidak dapat menggunakan fitur WaterTik.</p>
+        <p>Silahkan hubungi admin untuk informasi lebih lanjut.</p>
+        <div class="wa-contact" style="margin-top: 15px; justify-content: center;">
+            <span>Admin WaterTik</span>
+            <span>089699024654</span>
+            <a href="https://wa.me/6289699024654" class="wa-button-popup" target="_blank">Chat</a>
+        </div>
+        <button class="close-popup" onclick="closeBanPopup()" style="margin-top: 15px;">Mengerti</button>
+    </div>
+</div>
 
+<div id="winnerPopup" class="winner-popup-overlay">
+    <div class="winner-popup-content">
+        <div id="winnerPopupIcon"><i class="fas fa-trophy"></i></div>
+        <h2 id="winnerPopupTitle">🎉 SELAMAT! 🎉</h2>
+        <div id="winnerPopupPrize" class="winner-prize">Rp50.000</div>
+        <div id="winnerPopupMessage" class="winner-message">
+            Anda menjadi JUARA 1!<br>
+            Segera hubungi admin untuk klaim hadiah.
+        </div>
+        <a href="https://wa.me/6289699024654" class="wa-button" target="_blank" id="winnerPopupWaButton">
+            <i class="fab fa-whatsapp"></i> Hubungi Admin Sekarang
+        </a>
+        <button class="close-winner-popup" onclick="closeWinnerPopup()">Tutup</button>
+    </div>
+</div>
+
+<div id="kontakPopup" class="kontak-popup">
+    <div class="popup-content">
+        <h2><i class="fab fa-whatsapp"></i> Kontak Admin</h2>
+        <div class="wa-contact"><span>Admin WaterTik</span><span>089699024654</span><a href="https://wa.me/6289699024654" class="wa-button-popup" target="_blank">Chat</a></div>
+        <button class="close-popup" onclick="closeKontakPopup()">Tutup</button>
+    </div>
+</div>
+
+<div id="dashboardModal" class="dashboard-modal">
+    <div class="popup-content">
+        <h2>Edit Avatar</h2>
+        <div class="avatar-preview" id="avatarPreviewModal"><i class="fas fa-user"></i></div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="uploadAvatar()">
+        <button class="btn" onclick="document.getElementById('avatarInput').click()">Upload Avatar</button>
+        <button class="btn btn-secondary" onclick="removeAvatar()" style="margin-top:10px;">Hapus Avatar</button>
+        <button class="btn btn-secondary" onclick="closeDashboard()" style="margin-top:15px;">Tutup</button>
+    </div>
+</div>
+
+<div id="premiumModal" class="premium-modal">
+    <div class="popup-content">
+        <h2><i class="fas fa-crown"></i> Upgrade Premium</h2>
+        <p style="margin:15px 0;">Hanya <strong style="color:#FFD700;font-size:20px;">Rp10.000/bulan</strong></p>
+        <div class="payment-item"><span><i class="fas fa-money-bill-wave"></i> DANA</span><span>089699024654</span><button class="copy-btn" onclick="copyToClipboard('089699024654')">Copy</button></div>
+        <div class="payment-item"><span><i class="fas fa-mobile-alt"></i> GoPay</span><span></span>083875424751</span><button class="copy-btn" onclick="copyToClipboard('083875424751')">Copy</button></div>
+        <div class="payment-item"><span><i class="fas fa-qrcode"></i> QRIS</span><span>Hubungi admin</span><a href="https://wa.me/6289699024654" class="wa-button-popup" style="padding:5px 12px;">Chat</a></div>
+        <p style="margin:15px 0;font-size:12px;">Setelah bayar, kirim bukti ke admin WhatsApp untuk aktivasi premium.</p>
+        <a href="https://wa.me/6289699024654" class="btn btn-premium" style="display:inline-block;margin:10px 0;text-decoration:none;">Hubungi Admin</a>
+        <button class="close-popup" onclick="closePremiumModal()">Tutup</button>
+    </div>
+</div>
+
+<script>
+    // ==================== GENERATE ID USER UNIK ====================
+    function generateUniqueUserId() {
+        const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+        let randomPart = '';
+        for (let i = 0; i < 8; i++) {
+            randomPart += chars[Math.floor(Math.random() * chars.length)];
+        }
+        const randomNum = Math.floor(Math.random() * 9000) + 1000;
+        return `WT-FIK-${randomPart}-${randomNum}`;
+    }
+    
+    function isUserIdExists(userId, excludeFingerprint = null) {
+        return users.some(user => user.userId === userId && user.fingerprint !== excludeFingerprint);
+    }
+    
+    function generateUniqueUserIdWithRetry(excludeFingerprint = null, maxRetry = 5) {
+        for (let i = 0; i < maxRetry; i++) {
+            const newId = generateUniqueUserId();
+            if (!isUserIdExists(newId, excludeFingerprint)) {
+                return newId;
+            }
+        }
+        return `WT-FIK-${Date.now().toString(36)}-${Math.floor(Math.random() * 9000 + 1000)}`;
+    }
+    
+    // ==================== CSRF TOKEN & MAINTENANCE ====================
+    let csrfToken = localStorage.getItem('watertik_csrf');
+    if (!csrfToken) {
+        csrfToken = crypto.randomUUID();
+        localStorage.setItem('watertik_csrf', csrfToken);
+    }
+    
+    function checkMaintenance() {
+        let maintenance = localStorage.getItem('watertik_maintenance');
+        let overlay = document.getElementById('maintenanceOverlay');
+        if (maintenance === 'true') {
+            if (overlay) overlay.classList.add('active');
+            document.body.style.pointerEvents = 'none';
+            document.body.style.opacity = '0.5';
+            return true;
+        } else {
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.pointerEvents = 'auto';
+            document.body.style.opacity = '1';
+            return false;
+        }
+    }
+    
+    // ==================== RATE LIMIT LOGIN ====================
+    let loginAttempts = parseInt(localStorage.getItem('watertik_login_attempts')) || 0;
+    let lockUntil = parseInt(localStorage.getItem('watertik_lock_until')) || 0;
+    let currentCaptchaAnswer = 0;
+    let pendingLoginName = null;
+    
+    function updateRateLimitDisplay() {
+        const now = Date.now();
+        const warningDiv = document.getElementById('rateLimitWarning');
+        const timerSpan = document.getElementById('rateLimitTimer');
+        
+        if (lockUntil > now) {
+            const minutesLeft = Math.ceil((lockUntil - now) / 60000);
+            if (warningDiv) {
+                warningDiv.style.display = 'block';
+                if (timerSpan) timerSpan.innerText = minutesLeft;
+            }
+            const loginBtn = document.querySelector('#loginSection .login-btn');
+            if (loginBtn) loginBtn.disabled = true;
+        } else {
+            if (warningDiv) warningDiv.style.display = 'none';
+            const loginBtn = document.querySelector('#loginSection .login-btn');
+            if (loginBtn) loginBtn.disabled = false;
+        }
+    }
+    
+    function recordFailedAttempt() {
+        loginAttempts++;
+        localStorage.setItem('watertik_login_attempts', loginAttempts);
+        
+        if (loginAttempts >= 3) {
+            lockUntil = Date.now() + 5 * 60 * 1000;
+            localStorage.setItem('watertik_lock_until', lockUntil);
+            loginAttempts = 0;
+            localStorage.setItem('watertik_login_attempts', 0);
+            addSecurityLog('Rate limit triggered - terlalu banyak percobaan login gagal');
+        }
+        updateRateLimitDisplay();
+    }
+    
+    function resetLoginAttempts() {
+        loginAttempts = 0;
+        lockUntil = 0;
+        localStorage.setItem('watertik_login_attempts', 0);
+        localStorage.setItem('watertik_lock_until', 0);
+        updateRateLimitDisplay();
+    }
+    
+    function generateCaptcha() {
+        const a = Math.floor(Math.random() * 10) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        currentCaptchaAnswer = a + b;
+        document.getElementById('captchaQuestionLogin').innerHTML = `Berapa ${a} + ${b}?`;
+    }
+    
+    function verifyCaptchaAndLogin() {
+        const answer = parseInt(document.getElementById('captchaAnswerLogin').value);
+        if (answer === currentCaptchaAnswer) {
+            document.getElementById('captchaLoginDiv').style.display = 'none';
+            document.getElementById('captchaAnswerLogin').value = '';
+            performLogin(pendingLoginName);
+        } else {
+            showToast('❌ Jawaban captcha salah!');
+            generateCaptcha();
+        }
+    }
+    
+    async function attemptLogin() {
+        if (checkMaintenance()) {
+            showToast('⏳ WaterTik sedang maintenance, coba lagi nanti.');
+            return;
+        }
+        const now = Date.now();
+        if (lockUntil > now) {
+            showToast('Terlalu banyak percobaan. Coba lagi nanti.');
+            return;
+        }
+        
+        let name = document.getElementById('loginName').value.trim();
+        if (!name) { showToast('Masukkan nama!'); return; }
+        
+        if (loginAttempts >= 2) {
+            pendingLoginName = name;
+            generateCaptcha();
+            document.getElementById('captchaLoginDiv').style.display = 'block';
+        } else {
+            await performLogin(name);
+        }
+    }
+    
+    // ==================== API CONFIG ====================
+    const VIDEO_APIS = [
+        { handler: async (url) => {
+            const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+            const data = await res.json();
+            if (data.code === 0 && data.data) {
+                let uploadDate = '-';
+                if (data.data.create_time) {
+                    const date = new Date(data.data.create_time * 1000);
+                    uploadDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                }
+                return { 
+                    success: true, 
+                    hdUrl: data.data.hdplay || data.data.play, 
+                    sdUrl: data.data.play, 
+                    title: data.data.title || 'TikTok Video', 
+                    author: data.data.author?.nickname || '@user', 
+                    duration: formatDuration(data.data.duration || 0), 
+                    thumbnail: data.data.cover, 
+                    size: data.data.size ? (data.data.size/1024/1024).toFixed(1)+' MB' : '~15 MB', 
+                    images: data.data.images || [],
+                    uploadDate: uploadDate
+                };
+            }
+            return null;
+        }},
+        { handler: async (url) => { try { const res = await fetch(`https://tikdown.org/api?url=${encodeURIComponent(url)}`); const data = await res.json(); if (data.status === 'success') return { success: true, hdUrl: data.videoUrl, sdUrl: data.videoUrl, title: data.title || 'TikTok Video', author: data.author || '@user', duration: '0:45', thumbnail: data.thumbnail || '', size: '18 MB', images: [], uploadDate: new Date().toLocaleDateString('id-ID') }; } catch(e){} return null; }}
+    ];
+
+    function formatDuration(seconds) { const mins = Math.floor(seconds/60); const secs = Math.floor(seconds%60); return `${mins}:${secs.toString().padStart(2,'0')}`; }
+    function copyToClipboard(text) { navigator.clipboard.writeText(text); showToast('✅ Nomor disalin!'); }
+
+    // ==================== DETEKSI RAMADHAN ====================
+    let ramadhanPhase = 'countdown';
+    let ramadhanDaysLeft = 0;
+
+    function getRamadhanEstimate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        let ramadhanStart = now <= new Date(year, 1, 18) ? new Date(year, 1, 18) : new Date(year + 1, 1, 8);
+        const daysLeft = Math.ceil((ramadhanStart - now) / (1000 * 60 * 60 * 24));
+        const isRamadhan = daysLeft <= 0 && daysLeft > -30;
+        const isLebaran = daysLeft <= -30;
+        return { daysLeft, startDate: ramadhanStart.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }), isRamadhan, isLebaran };
+    }
+
+    async function checkRamadhanReal() {
+        const statusDiv = document.getElementById('ramadhanStatus');
+        const countdownDiv = document.getElementById('ramadhanCountdown');
+        const infoStatus = document.getElementById('ramadhanInfoStatus');
+        
+        if (!navigator.onLine) {
+            const estimate = getRamadhanEstimate();
+            if (estimate.isRamadhan) {
+                ramadhanPhase = 'active';
+                document.body.classList.add('ramadhan');
+                document.body.classList.remove('lebaran');
+                statusDiv.innerHTML = `🌙 Selamat Bulan Ramadhan! (Offline)`;
+                countdownDiv.innerHTML = `📅 Perkiraan Ramadhan sedang berlangsung`;
+                if (infoStatus) infoStatus.innerHTML = `Ramadhan - Misi Aktif`;
+            } else if (estimate.isLebaran) {
+                ramadhanPhase = 'lebaran';
+                document.body.classList.add('lebaran');
+                document.body.classList.remove('ramadhan');
+                statusDiv.innerHTML = `🌙 Taqabbalallahu minna wa minkum`;
+                countdownDiv.innerHTML = `📅 Misi telah berakhir`;
+                if (infoStatus) infoStatus.innerHTML = `Idul Fitri - Misi Selesai`;
+            } else {
+                ramadhanPhase = 'countdown';
+                ramadhanDaysLeft = estimate.daysLeft;
+                document.body.classList.remove('ramadhan', 'lebaran');
+                statusDiv.innerHTML = `🌙 Menunggu Bulan Ramadhan`;
+                countdownDiv.innerHTML = `⏳ ${estimate.daysLeft} hari menuju Ramadhan`;
+                if (infoStatus) infoStatus.innerHTML = `${estimate.daysLeft} hari menuju Ramadhan`;
+            }
+            updateMissionPhaseDisplay();
+            return;
+        }
+        
+        try {
+            const today = new Date();
+            const dateStr = `${today.getDate().toString().padStart(2,'0')}-${(today.getMonth()+1).toString().padStart(2,'0')}-${today.getFullYear()}`;
+            const controller = new AbortController();
+            setTimeout(() => controller.abort(), 8000);
+            const res = await fetch(`https://api.aladhan.com/v1/gToH/${dateStr}`, { signal: controller.signal });
+            const data = await res.json();
+            
+            if (data.code === 200 && data.data) {
+                const hijriMonth = parseInt(data.data.hijri.month.number);
+                const hijriDay = parseInt(data.data.hijri.day);
+                const hijriYear = parseInt(data.data.hijri.year);
+                
+                if (hijriMonth === 9) {
+                    ramadhanPhase = 'active';
+                    document.body.classList.add('ramadhan');
+                    document.body.classList.remove('lebaran');
+                    statusDiv.innerHTML = `🌙 Selamat Ramadhan ${hijriYear} H!`;
+                    countdownDiv.innerHTML = `📆 Hari ke-${hijriDay} Ramadhan | ${today.toLocaleDateString('id-ID')}`;
+                    if (infoStatus) infoStatus.innerHTML = `Ramadhan - Misi Aktif`;
+                } else if (hijriMonth > 9) {
+                    ramadhanPhase = 'lebaran';
+                    document.body.classList.add('lebaran');
+                    document.body.classList.remove('ramadhan');
+                    statusDiv.innerHTML = `🌙 Taqabbalallahu minna wa minkum`;
+                    countdownDiv.innerHTML = `📅 Misi telah berakhir | ${today.toLocaleDateString('id-ID')}`;
+                    if (infoStatus) infoStatus.innerHTML = `Idul Fitri - Misi Selesai`;
+                } else {
+                    ramadhanPhase = 'countdown';
+                    let daysToRamadhan = hijriMonth < 9 ? (9 - hijriMonth) * 30 - hijriDay : (9 + 12 - hijriMonth) * 30 - hijriDay;
+                    if (daysToRamadhan < 0) daysToRamadhan = 0;
+                    ramadhanDaysLeft = daysToRamadhan;
+                    document.body.classList.remove('ramadhan', 'lebaran');
+                    statusDiv.innerHTML = `🌙 Menunggu Ramadhan ${hijriYear + (hijriMonth >= 9 ? 1 : 0)} H`;
+                    countdownDiv.innerHTML = `⏳ ${daysToRamadhan} hari menuju Ramadhan | ${today.toLocaleDateString('id-ID')}`;
+                    if (infoStatus) infoStatus.innerHTML = `${daysToRamadhan} hari menuju Ramadhan`;
+                }
+                updateMissionPhaseDisplay();
+            } else throw new Error();
+        } catch(e) {
+            const estimate = getRamadhanEstimate();
+            if (estimate.isRamadhan) {
+                ramadhanPhase = 'active';
+                document.body.classList.add('ramadhan');
+                statusDiv.innerHTML = `🌙 Selamat Ramadhan! (Perkiraan)`;
+            } else if (estimate.isLebaran) {
+                ramadhanPhase = 'lebaran';
+                document.body.classList.add('lebaran');
+                statusDiv.innerHTML = `🌙 Taqabbalallahu minna wa minkum`;
+            } else {
+                ramadhanPhase = 'countdown';
+                ramadhanDaysLeft = estimate.daysLeft;
+                document.body.classList.remove('ramadhan', 'lebaran');
+                statusDiv.innerHTML = `🌙 Menunggu Ramadhan`;
+                countdownDiv.innerHTML = `⏳ ${estimate.daysLeft} hari menuju Ramadhan | ${new Date().toLocaleDateString('id-ID')}`;
+            }
+            updateMissionPhaseDisplay();
+        }
+    }
+    
+    function updateMissionPhaseDisplay() {
+        const countdownArea = document.getElementById('missionCountdownArea');
+        const activeArea = document.getElementById('missionActiveArea');
+        const lebaranArea = document.getElementById('missionLebaranArea');
+        const timer = document.getElementById('countdownTimer');
+        
+        updateWinnersList();
+        
+        if (ramadhanPhase === 'countdown') {
+            if (countdownArea) countdownArea.style.display = 'block';
+            if (activeArea) activeArea.style.display = 'none';
+            if (lebaranArea) lebaranArea.style.display = 'none';
+            if (timer) timer.innerHTML = `⏳ ${ramadhanDaysLeft} hari lagi menuju Ramadhan ⏳`;
+        } else if (ramadhanPhase === 'active') {
+            if (countdownArea) countdownArea.style.display = 'none';
+            if (activeArea) activeArea.style.display = 'block';
+            if (lebaranArea) lebaranArea.style.display = 'none';
+        } else {
+            if (countdownArea) countdownArea.style.display = 'none';
+            if (activeArea) activeArea.style.display = 'none';
+            if (lebaranArea) lebaranArea.style.display = 'block';
+        }
+    }
+    
+    function updateWinnersList() {
+        const winners = JSON.parse(localStorage.getItem('watertik_winners')) || [];
+        const container = document.getElementById('winnersListContainer');
+        
+        if (winners.length === 0) {
+            container.innerHTML = '<div style="text-align:center;padding:10px;color:#aaa;">Belum ada pemenang</div>';
+            return;
+        }
+        
+        container.innerHTML = winners.sort((a,b) => a.rank - b.rank).map(w => {
+            let prize = w.rank === 1 ? 'Rp50.000' : (w.rank === 2 ? 'Rp20.000' : 'Rp10.000');
+            let rankClass = `winner-rank-${w.rank}`;
+            let rankIcon = w.rank === 1 ? '🏆' : (w.rank === 2 ? '🥈' : '🥉');
+            return `
+                <div class="winner-item">
+                    <span class="${rankClass}">${rankIcon} Pemenang ${w.rank}</span>
+                    <span class="winner-name">${w.name}</span>
+                    <span class="winner-prize-badge">${prize}</span>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    function isMissionActive() { return ramadhanPhase === 'active'; }
+    
+    function showWinnerPopup(rank, prize) {
+        const popup = document.getElementById('winnerPopup');
+        const title = document.getElementById('winnerPopupTitle');
+        const prizeEl = document.getElementById('winnerPopupPrize');
+        const message = document.getElementById('winnerPopupMessage');
+        const icon = document.getElementById('winnerPopupIcon');
+        
+        if (rank === 1) {
+            title.innerHTML = '🎉 SELAMAT! 🎉';
+            prizeEl.innerHTML = 'Rp50.000';
+            message.innerHTML = 'Anda menjadi JUARA 1!<br>Segera hubungi admin untuk klaim hadiah.';
+            icon.innerHTML = '<i class="fas fa-trophy" style="color:#FFD700;"></i>';
+        } else if (rank === 2) {
+            title.innerHTML = '🎉 SELAMAT! 🎉';
+            prizeEl.innerHTML = 'Rp20.000';
+            message.innerHTML = 'Anda menjadi JUARA 2!<br>Segera hubungi admin untuk klaim hadiah.';
+            icon.innerHTML = '<i class="fas fa-medal" style="color:#C0C0C0;"></i>';
+        } else {
+            title.innerHTML = '🎉 SELAMAT! 🎉';
+            prizeEl.innerHTML = 'Rp10.000';
+            message.innerHTML = 'Anda menjadi JUARA 3!<br>Segera hubungi admin untuk klaim hadiah.';
+            icon.innerHTML = '<i class="fas fa-medal" style="color:#CD7F32;"></i>';
+        }
+        
+        popup.classList.add('active');
+        setTimeout(() => { closeWinnerPopup(); }, 10000);
+    }
+    
+    function closeWinnerPopup() { document.getElementById('winnerPopup').classList.remove('active'); }
+    
+    function showBanPopup(reason) {
+        const popup = document.getElementById('banReasonPopup');
+        const reasonText = document.getElementById('banReasonText');
+        reasonText.innerHTML = `<strong>Alasan:</strong> ${reason || 'Melanggar aturan WaterTik'}`;
+        popup.classList.add('active');
+    }
+    
+    function closeBanPopup() { document.getElementById('banReasonPopup').classList.remove('active'); }
+
+    function resetYearlyMissions(newHijriYear) {
+        const lastYear = localStorage.getItem('last_ramadhan_year');
+        
+        if (lastYear && parseInt(lastYear) !== newHijriYear) {
+            users.forEach(user => {
+                user.missionCompleted = false;
+                user.missionCompleteTime = null;
+                user.missionRank = null;
+            });
+            
+            missionData = { videoDownloads: 0, photoGenerates: 0, mp3Converts: 0 };
+            localStorage.setItem('watertik_winners', JSON.stringify([]));
+            
+            saveUsers();
+            saveMissionData();
+            
+            if (currentUser) {
+                showToast('🌙 Selamat tahun baru Hijriah! Misi Ramadhan telah direset untuk tahun ini.', 5000);
+            }
+            
+            addSecurityLog(`RESET TAHUNAN: Misi direset untuk tahun Hijriah ${newHijriYear}`);
+        }
+        localStorage.setItem('last_ramadhan_year', newHijriYear.toString());
+    }
+
+    // ==================== FINGERPRINT & STORAGE ====================
+    let cachedFingerprint = null;
+    async function getFingerprint() {
+        if (cachedFingerprint) return cachedFingerprint;
+        try {
+            const fp = await FingerprintJS.load();
+            const result = await fp.get();
+            cachedFingerprint = result.visitorId;
+            localStorage.setItem('watertik_fingerprint', cachedFingerprint);
+            return cachedFingerprint;
+        } catch(e) {
+            let old = localStorage.getItem('watertik_fingerprint');
+            if(old) return old;
+            let fallback = 'fp_' + Math.random().toString(36).substr(2, 16);
+            localStorage.setItem('watertik_fingerprint', fallback);
+            return fallback;
+        }
+    }
+
+    let users = JSON.parse(localStorage.getItem('watertik_users')) || [];
+    let currentUser = JSON.parse(localStorage.getItem('watertik_current_user')) || null;
+    let currentWatermarkUrl = "", currentWatermarkBlob = null, framesList = [], selectedVideoFile = null, currentVideoData = null, currentQuality = 'hd';
+    let missionData = JSON.parse(localStorage.getItem('watertik_mission')) || { videoDownloads: 0, photoGenerates: 0, mp3Converts: 0 };
+    
+    // Flag untuk mencegah double click
+    let isGeneratingWatermark = false;
+    let isGeneratingFrames = false;
+    
+    function saveUsers() { localStorage.setItem('watertik_users', JSON.stringify(users)); }
+    function saveCurrentUser() { localStorage.setItem('watertik_current_user', JSON.stringify(currentUser)); }
+    function saveMissionData() { localStorage.setItem('watertik_mission', JSON.stringify(missionData)); }
+    function setCurrentDate() { 
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    
+    function updateUserIdDisplay() {
+        const infoContainer = document.getElementById('infoUserIdContainer');
+        const infoUserIdValue = document.getElementById('infoUserIdValue');
+        const akunUserIdValue = document.getElementById('akunUserIdValue');
+        
+        if (currentUser && currentUser.userId) {
+            if (infoContainer) infoContainer.style.display = 'block';
+            if (infoUserIdValue) infoUserIdValue.innerText = currentUser.userId;
+            if (akunUserIdValue) akunUserIdValue.innerText = currentUser.userId;
+        } else {
+            if (infoContainer) infoContainer.style.display = 'none';
+            if (infoUserIdValue) infoUserIdValue.innerText = '-';
+            if (akunUserIdValue) akunUserIdValue.innerText = '-';
+        }
+    }
+    
+    function copyUserId() {
+        if (currentUser && currentUser.userId) {
+            navigator.clipboard.writeText(currentUser.userId);
+            showToast('✅ ID User berhasil disalin!');
+        } else {
+            showToast('❌ Belum login');
+        }
+    }
+    
+    async function isBlockedByName(name) {
+        let blocked = JSON.parse(localStorage.getItem('watertik_blocked')) || [];
+        return blocked.some(b => b.name === name);
+    }
+    
+    async function isBlockedByFingerprint(fingerprint) {
+        let blocked = JSON.parse(localStorage.getItem('watertik_blocked')) || [];
+        return blocked.some(b => b.fingerprint === fingerprint);
+    }
+    
+    async function isBlocked(name, fingerprint) {
+        return (await isBlockedByName(name)) || (await isBlockedByFingerprint(fingerprint));
+    }
+    
+    function getBlockReason(name, fingerprint) {
+        let blocked = JSON.parse(localStorage.getItem('watertik_blocked')) || [];
+        let blockEntry = blocked.find(b => b.name === name || b.fingerprint === fingerprint);
+        return blockEntry ? blockEntry.reason || 'Melanggar aturan WaterTik' : null;
+    }
+    
+    function addSecurityLog(message) {
+        let log = JSON.parse(localStorage.getItem('watertik_security_log')) || [];
+        log.unshift({ message: message, time: new Date().toISOString() });
+        if(log.length > 100) log.pop();
+        localStorage.setItem('watertik_security_log', JSON.stringify(log));
+    }
+    
+    function isPremiumActive(user) {
+        if(!user || !user.isPremium) return false;
+        if(!user.premiumExpiry) return false;
+        return new Date(user.premiumExpiry) > new Date();
+    }
+    
+    async function performLogin(name) {
+        let fingerprint = await getFingerprint();
+        
+        if(await isBlocked(name, fingerprint)) {
+            let reason = getBlockReason(name, fingerprint);
+            showToast('⚠️ AKUN ANDA DIBLOKIR! Hubungi admin.', 5000);
+            showBanPopup(reason);
+            addSecurityLog(`Percobaan login gagal: user ${name} diblokir`);
+            recordFailedAttempt();
+            return;
+        }
+        
+        let existingUser = users.find(u => u.fingerprint === fingerprint);
+        
+        if(existingUser) {
+            if(existingUser.blocked) { 
+                showToast('⚠️ AKUN DIBLOKIR! Hubungi admin.', 5000);
+                let reason = getBlockReason(existingUser.name, existingUser.fingerprint);
+                showBanPopup(reason);
+                recordFailedAttempt();
+                return; 
+            }
+            currentUser = existingUser;
+            if (!currentUser.userId) {
+                currentUser.userId = generateUniqueUserIdWithRetry(currentUser.fingerprint);
+                saveUsers();
+                saveCurrentUser();
+                addSecurityLog(`User ${currentUser.name} diberikan ID baru: ${currentUser.userId}`);
+            }
+        } else { 
+            let sameNameUser = users.find(u => u.name === name);
+            if (sameNameUser && sameNameUser.blocked) {
+                showToast('⚠️ NAMA USER INI DIBLOKIR! Hubungi admin.', 5000);
+                let reason = getBlockReason(name, null);
+                showBanPopup(reason);
+                recordFailedAttempt();
+                return;
+            }
+            
+            const newUserId = generateUniqueUserIdWithRetry(null);
+            
+            currentUser = { 
+                name: name, avatar: null, totalDownloads: 0, totalMP3: 0, todayDownloads: 0, 
+                joinDate: new Date().toISOString(), history: [], isPremium: false, premiumExpiry: null, 
+                fingerprint: fingerprint, missionCompleted: false, missionCompleteTime: null, 
+                missionRank: null, blocked: false,
+                userId: newUserId
+            }; 
+            users.push(currentUser); 
+            saveUsers();
+            addSecurityLog(`User baru terdaftar: ${name} dengan ID: ${newUserId}`);
+        }
+        saveCurrentUser(); 
+        resetLoginAttempts();
+        updateUI(); 
+        updateUserIdDisplay();
+        showToast(`Selamat datang, ${name}! ID User: ${currentUser.userId}`); 
+        document.getElementById('loginName').value = '';
+        addSecurityLog(`Login sukses: user ${name} (ID: ${currentUser.userId}) dari fingerprint ${fingerprint.substring(0,10)}...`);
+    }
+    
+    function updateUI() {
+        if(currentUser) {
+            let blockedList = JSON.parse(localStorage.getItem('watertik_blocked')) || [];
+            let isBlockedByName = blockedList.some(b => b.name === currentUser.name);
+            let isBlockedByFp = blockedList.some(b => b.fingerprint === currentUser.fingerprint);
+            let isBlockedNow = isBlockedByName || isBlockedByFp;
+            
+            if(isBlockedNow || currentUser.blocked) {
+                currentUser.blocked = true; 
+                saveCurrentUser();
+                let reason = getBlockReason(currentUser.name, currentUser.fingerprint);
+                showBanPopup(reason);
+                return;
+            }
+            
+            let premiumActive = isPremiumActive(currentUser);
+            let joinDate = currentUser.joinDate ? new Date(currentUser.joinDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Baru';
+            
+            document.getElementById('userNameDisplay').innerText = currentUser.name;
+            document.getElementById('userJoinDateDisplay').innerHTML = `<i class="fas fa-calendar-alt"></i> Member since ${joinDate}`;
+            document.getElementById('miniDownloads').innerText = currentUser.totalDownloads;
+            document.getElementById('miniMP3').innerText = currentUser.totalMP3;
+            document.getElementById('miniPremium').innerHTML = premiumActive ? '<i class="fas fa-crown"></i>' : '✗';
+            
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('userInfoSection').style.display = 'block';
+            document.getElementById('loggedUserName').innerText = currentUser.name;
+            document.getElementById('loggedJoinDate').innerText = joinDate;
+            document.getElementById('userPremiumStatus').innerHTML = premiumActive ? '<span style="color:#FFD700;">✓ Premium Active</span>' : (currentUser.isPremium ? '<span style="color:#ff9800;">⏰ Premium Expired</span>' : 'Free User');
+            document.getElementById('userPremiumExpiry').innerText = currentUser.premiumExpiry ? new Date(currentUser.premiumExpiry).toLocaleDateString('id-ID') : '-';
+            document.getElementById('akunDownloads').innerText = currentUser.totalDownloads;
+            document.getElementById('akunMP3').innerText = currentUser.totalMP3;
+            document.getElementById('akunMisi').innerText = currentUser.missionCompleted ? 1 : 0;
+            
+            document.getElementById('statToday').innerText = currentUser.todayDownloads || 0;
+            document.getElementById('statTotalMP3').innerText = currentUser.totalMP3;
+            document.getElementById('statMisi').innerText = currentUser.missionCompleted ? 1 : 0;
+            
+            let avatarDisplay = document.getElementById('avatarDisplay');
+            let avatarPreviewDash = document.getElementById('avatarPreviewDash');
+            let avatarPreviewModal = document.getElementById('avatarPreviewModal');
+            
+            if(currentUser.avatar) {
+                avatarDisplay.innerHTML = `<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;">`;
+                avatarPreviewDash.innerHTML = `<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;">`;
+                avatarPreviewModal.innerHTML = `<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;">`;
+            } else {
+                avatarDisplay.innerHTML = `<i class="fas fa-user"></i>`;
+                avatarPreviewDash.innerHTML = `<i class="fas fa-user"></i>`;
+                avatarPreviewModal.innerHTML = `<i class="fas fa-user"></i>`;
+            }
+            
+            const adContainer = document.getElementById('adContainer');
+            if(adContainer) adContainer.classList.toggle('hidden', premiumActive === true);
+            
+            updateHistoryDisplay();
+            updateMissionDisplay();
+            updateWinnersList();
+            updateUserIdDisplay();
+        } else {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('userInfoSection').style.display = 'none';
+            document.getElementById('userNameDisplay').innerText = 'Guest';
+            document.getElementById('userJoinDateDisplay').innerHTML = '<i class="fas fa-calendar-alt"></i> Belum login';
+            document.getElementById('miniDownloads').innerText = '0';
+            document.getElementById('miniMP3').innerText = '0';
+            document.getElementById('miniPremium').innerHTML = '✗';
+            document.getElementById('statToday').innerText = '0';
+            document.getElementById('statTotalMP3').innerText = '0';
+            document.getElementById('statMisi').innerText = '0';
+            
+            const adContainer = document.getElementById('adContainer');
+            if(adContainer) adContainer.classList.remove('hidden');
+            
+            updateUserIdDisplay();
+        }
+    }
+    
+    function updateHistoryDisplay() {
+        let container = document.getElementById('historyList');
+        if(!currentUser || !currentUser.history || currentUser.history.length === 0) { 
+            container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-inbox"></i> Belum ada riwayat</div>'; 
+            return; 
+        }
+        container.innerHTML = currentUser.history.slice(0,20).map(h => `<div class="history-item"><span><i class="fas ${h.type === 'download' ? 'fa-download' : 'fa-music'}"></i> ${h.title.substring(0,40)}</span><span style="font-size:11px;color:#aaa;">${h.date}</span></div>`).join('');
+    }
+    
+    function addToHistory(type, title) { 
+        if(currentUser) { 
+            currentUser.history.unshift({ type, title, date: new Date().toLocaleString() }); 
+            if(currentUser.history.length > 50) currentUser.history.pop(); 
+            saveUsers(); saveCurrentUser(); updateHistoryDisplay(); 
+        } 
+    }
+    
+    function updateDownloadStats() { 
+        if(currentUser) { 
+            currentUser.totalDownloads++; 
+            currentUser.todayDownloads = (currentUser.todayDownloads || 0) + 1; 
+            saveUsers(); saveCurrentUser(); updateUI(); 
+        } 
+    }
+    
+    function uploadAvatar() { 
+        let file = document.getElementById('avatarInput').files[0]; 
+        if(!file) return; 
+        let reader = new FileReader(); 
+        reader.onload = function(e) { 
+            if(currentUser) { currentUser.avatar = e.target.result; saveUsers(); saveCurrentUser(); updateUI(); showToast('✅ Avatar diupload!'); }
+        }; 
+        reader.readAsDataURL(file); 
+    }
+    
+    function removeAvatar() { 
+        if(currentUser) { currentUser.avatar = null; saveUsers(); saveCurrentUser(); updateUI(); showToast('Avatar dihapus'); }
+    }
+    
+    function updateMissionDisplay() {
+        if(!currentUser) return;
+        if (!isMissionActive()) {
+            if (document.getElementById('missionStatusText')) {
+                if (ramadhanPhase === 'countdown') document.getElementById('missionStatusText').innerHTML = `🌙 Misi akan aktif saat Ramadhan tiba (${ramadhanDaysLeft} hari lagi)! 🌙`;
+                else if (ramadhanPhase === 'lebaran') document.getElementById('missionStatusText').innerHTML = '🌙 Misi telah berakhir. Sampai jumpa tahun depan! 🌙';
+            }
+            return;
+        }
+        
+        const winners = JSON.parse(localStorage.getItem('watertik_winners')) || [];
+        const isWinner = winners.some(w => w.fingerprint === currentUser.fingerprint);
+        
+        let completed = (missionData.videoDownloads >= 100 && missionData.photoGenerates >= 100 && missionData.mp3Converts >= 10);
+        let percent = Math.min(100, ((missionData.videoDownloads/100) + (missionData.photoGenerates/100) + (missionData.mp3Converts/10)) / 3 * 100);
+        document.getElementById('videoCount').innerText = missionData.videoDownloads;
+        document.getElementById('photoCount').innerText = missionData.photoGenerates;
+        document.getElementById('mp3Count').innerText = missionData.mp3Converts;
+        document.getElementById('missionProgressBar').style.width = percent + '%';
+        
+        if(isWinner) {
+            document.getElementById('missionStatusText').innerHTML = '🏆 Anda sudah menjadi pemenang! Hubungi admin untuk klaim hadiah. 🏆';
+            document.getElementById('claimMissionBtn').style.display = 'none';
+        } else if(completed && !currentUser.missionCompleted) {
+            document.getElementById('missionStatusText').innerHTML = '✅ MISI SELESAI! Klik "Klaim Hadiah"!';
+            document.getElementById('claimMissionBtn').style.display = 'block';
+        } else if(currentUser.missionCompleted) {
+            document.getElementById('missionStatusText').innerHTML = '🏆 Anda sudah menjadi pemenang! Hubungi admin.';
+            document.getElementById('claimMissionBtn').style.display = 'none';
+        } else {
+            document.getElementById('missionStatusText').innerHTML = `Progres: ${Math.round(percent)}% - Selesaikan semua misi!`;
+            document.getElementById('claimMissionBtn').style.display = 'none';
+        }
+    }
+    
+    function updateMissionVideo() { if(!currentUser || currentUser.missionCompleted) return; if(!isMissionActive()) { showToast('🌙 Misi hanya saat Ramadhan!'); return; } missionData.videoDownloads++; saveMissionData(); updateMissionDisplay(); showToast(`📥 Video: ${missionData.videoDownloads}/100`); }
+    function updateMissionPhoto() { if(!currentUser || currentUser.missionCompleted) return; if(!isMissionActive()) { showToast('🌙 Misi hanya saat Ramadhan!'); return; } missionData.photoGenerates++; saveMissionData(); updateMissionDisplay(); showToast(`🖼️ Foto: ${missionData.photoGenerates}/100`); }
+    function updateMissionMP3() { if(!currentUser || currentUser.missionCompleted) return; if(!isMissionActive()) { showToast('🌙 Misi hanya saat Ramadhan!'); return; } missionData.mp3Converts++; saveMissionData(); updateMissionDisplay(); showToast(`🎵 MP3: ${missionData.mp3Converts}/10`); }
+    
+    function claimMission() {
+        if(!currentUser) { showToast('Login dulu!'); return; }
+        if(!isMissionActive()) { showToast('🌙 Misi hanya saat Ramadhan!'); return; }
+        if(missionData.videoDownloads >= 100 && missionData.photoGenerates >= 100 && missionData.mp3Converts >= 10 && !currentUser.missionCompleted) {
+            
+            let winners = JSON.parse(localStorage.getItem('watertik_winners')) || [];
+            
+            if(winners.some(w => w.fingerprint === currentUser.fingerprint)) {
+                showToast('Anda sudah menjadi pemenang!');
+                return;
+            }
+            
+            let rank;
+            if(winners.length === 0) {
+                rank = 1;
+                showToast('🎉 SELAMAT! Anda JUARA 1 dengan hadiah Rp50.000! Hubungi admin untuk klaim.', 5000);
+                showWinnerPopup(1, 50000);
+                addSecurityLog(`User ${currentUser.name} (ID: ${currentUser.userId}) menjadi JUARA 1 misi Ramadhan`);
+            } else if(winners.length === 1) {
+                rank = 2;
+                showToast('🎉 SELAMAT! Anda JUARA 2 dengan hadiah Rp20.000! Hubungi admin untuk klaim.', 5000);
+                showWinnerPopup(2, 20000);
+                addSecurityLog(`User ${currentUser.name} (ID: ${currentUser.userId}) menjadi JUARA 2 misi Ramadhan`);
+            } else if(winners.length === 2) {
+                rank = 3;
+                showToast('🎉 SELAMAT! Anda JUARA 3 dengan hadiah Rp10.000! Hubungi admin untuk klaim.', 5000);
+                showWinnerPopup(3, 10000);
+                addSecurityLog(`User ${currentUser.name} (ID: ${currentUser.userId}) menjadi JUARA 3 misi Ramadhan`);
+            } else {
+                showToast('Misi sudah memiliki 3 pemenang. Misi ditutup untuk tahun ini.');
+                return;
+            }
+            
+            winners.push({
+                name: currentUser.name,
+                userId: currentUser.userId,
+                fingerprint: currentUser.fingerprint,
+                time: new Date().toISOString(),
+                rank: rank,
+                claimed: false
+            });
+            localStorage.setItem('watertik_winners', JSON.stringify(winners));
+            
+            currentUser.missionCompleted = true;
+            currentUser.missionCompleteTime = new Date().toISOString();
+            currentUser.missionRank = rank;
+            saveUsers(); saveCurrentUser();
+            
+            updateUI(); updateMissionDisplay();
+            updateMissionPhaseDisplay();
+            updateWinnersList();
+        } else {
+            showToast('Selesaikan semua misi terlebih dahulu!');
+        }
+    }
+    
+    async function downloadVideo() {
+        if (checkMaintenance()) {
+            showToast('⏳ WaterTik sedang maintenance, coba lagi nanti.');
+            return;
+        }
+        let url = document.getElementById('tiktokUrl').value.trim();
+        if(!url) { showToast('Masukkan link TikTok!'); return; }
+        if(currentUser?.blocked) { showToast('Perangkat diblokir!'); return; }
+        document.getElementById('videoLoading').style.display = 'block';
+        let videoData = null;
+        for(const api of VIDEO_APIS) { try { const data = await api.handler(url); if(data && data.success) { videoData = data; break; } } catch(e){} }
+        if(videoData) {
+            currentVideoData = { hdUrl: videoData.hdUrl, sdUrl: videoData.sdUrl, title: videoData.title, author: videoData.author, duration: videoData.duration, thumbnail: videoData.thumbnail, size: videoData.size, uploadDate: videoData.uploadDate };
+            document.getElementById('videoThumb').src = currentVideoData.thumbnail || 'https://placehold.co/200x300/1a1a2e/ffffff?text=TikTok';
+            document.getElementById('videoTitle').innerText = currentVideoData.title.substring(0, 100);
+            document.getElementById('videoAuthor').innerText = '@' + currentVideoData.author;
+            document.getElementById('videoDuration').innerText = currentVideoData.duration;
+            document.getElementById('videoDate').innerText = currentVideoData.uploadDate || new Date().toLocaleDateString('id-ID');
+            document.getElementById('videoSize').innerText = currentVideoData.size;
+            document.getElementById('downloadLink').href = currentVideoData.hdUrl;
+            document.getElementById('videoResult').classList.add('active');
+            updateDownloadStats(); addToHistory('download', currentVideoData.title);
+            updateMissionVideo();
+            showToast('✅ Video siap diunduh!');
+        } else { showToast('❌ Gagal mengambil video'); }
+        document.getElementById('videoLoading').style.display = 'none';
+    }
+    function selectQuality(q) { currentQuality = q; document.getElementById('downloadLink').href = q === 'hd' ? currentVideoData?.hdUrl : currentVideoData?.sdUrl; document.getElementById('videoQuality').innerText = q === 'hd' ? 'HD (720p)' : 'SD (480p)'; }
+    function clearLink() { document.getElementById('tiktokUrl').value = ''; document.getElementById('videoResult').classList.remove('active'); }
+    function clearLinkAndReset() { clearLink(); }
+    
+    async function generateWatermark() {
+        if (isGeneratingWatermark) {
+            showToast('⏳ Sedang memproses thumbnail, tunggu sebentar...');
+            return;
+        }
+        
+        if (checkMaintenance()) {
+            showToast('⏳ WaterTik sedang maintenance, coba lagi nanti.');
+            return;
+        }
+        let url = document.getElementById('watermarkUrl').value.trim();
+        if(!url || !url.includes('tiktok.com')) { showToast('Masukkan link TikTok valid!'); return; }
+        if(currentUser?.blocked) { showToast('Perangkat diblokir!'); return; }
+        
+        isGeneratingWatermark = true;
+        const thumbBtn = document.getElementById('thumbBtn');
+        thumbBtn.disabled = true;
+        thumbBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        
+        document.getElementById('watermarkLoading').style.display = 'block';
+        document.getElementById('watermarkResult').classList.remove('active');
+        document.getElementById('multipleFramesResult').style.display = 'none';
+        
+        try {
+            let videoData = null;
+            for(const api of VIDEO_APIS) { try { const data = await api.handler(url); if(data && data.success && data.thumbnail) { videoData = data; break; } } catch(e){} }
+            if(videoData && videoData.thumbnail) {
+                currentWatermarkUrl = videoData.thumbnail;
+                let imgRes = await fetch(currentWatermarkUrl);
+                currentWatermarkBlob = await imgRes.blob();
+                document.getElementById('watermarkImage').src = currentWatermarkUrl;
+                document.getElementById('watermarkImage').style.display = 'block';
+                document.getElementById('watermarkButtons').style.display = 'flex';
+                document.getElementById('watermarkResult').classList.add('active');
+                updateMissionPhoto();
+                showToast('Thumbnail berhasil diambil!');
+            } else throw new Error();
+        } catch(e) { showToast('Gagal mengambil thumbnail'); }
+        document.getElementById('watermarkLoading').style.display = 'none';
+        
+        isGeneratingWatermark = false;
+        thumbBtn.disabled = false;
+        thumbBtn.innerHTML = '<i class="fas fa-magic"></i> Ambil Thumbnail';
+    }
+    
+    function downloadSingleImage() { if(currentWatermarkBlob) { let blobUrl = URL.createObjectURL(currentWatermarkBlob); let link = document.createElement('a'); link.href = blobUrl; link.download = `thumbnail_${Date.now()}.jpg`; link.click(); setTimeout(()=> URL.revokeObjectURL(blobUrl), 100); showToast('Gambar disimpan!'); } }
+    function copyWatermarkLink() { if(currentWatermarkUrl) { navigator.clipboard.writeText(currentWatermarkUrl); showToast('Link disalin!'); } }
+    
+    async function generateMultipleFrames() {
+        if (isGeneratingFrames) {
+            showToast('⏳ Sedang memproses slide foto, tunggu sebentar...');
+            return;
+        }
+        
+        if (checkMaintenance()) {
+            showToast('⏳ WaterTik sedang maintenance, coba lagi nanti.');
+            return;
+        }
+        let url = document.getElementById('watermarkUrl').value.trim();
+        if(!url || !url.includes('tiktok.com')) { showToast('❌ Masukkan link TikTok valid!'); return; }
+        if(currentUser?.blocked) { showToast('Perangkat diblokir!'); return; }
+        
+        isGeneratingFrames = true;
+        const multiBtn = document.getElementById('multiBtn');
+        multiBtn.disabled = true;
+        multiBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses Slide...';
+        
+        document.getElementById('watermarkResult').classList.remove('active');
+        document.getElementById('multipleFramesResult').style.display = 'none';
+        
+        let loadingDiv = document.getElementById('multiFrameLoading'), progressBar = document.getElementById('multiFrameProgress');
+        loadingDiv.style.display = 'block'; progressBar.style.width = '0%'; 
+        
+        if (framesList.length > 0) {
+            framesList.forEach(f => { if(f.url && f.url.startsWith('blob:')) URL.revokeObjectURL(f.url); });
+            framesList = [];
+        }
+        
+        try {
+            progressBar.style.width = '30%'; document.getElementById('multiFrameStatusText').innerHTML = '📡 Mengambil data...';
+            let videoData = null;
+            for(const api of VIDEO_APIS) { try { const data = await api.handler(url); if(data && data.success && data.thumbnail) { videoData = data; break; } } catch(e){} }
+            if(!videoData) throw new Error();
+            
+            progressBar.style.width = '60%'; document.getElementById('multiFrameStatusText').innerHTML = '🖼️ Memproses gambar...';
+            let images = [];
+            
+            if(videoData.images && videoData.images.length > 0) {
+                for(let i = 0; i < Math.min(videoData.images.length, 9); i++) {
+                    let res = await fetch(videoData.images[i]);
+                    let blob = await res.blob();
+                    images.push({ blob, url: URL.createObjectURL(blob), name: `slide_${i+1}_${Date.now()}.jpg`, label: `Slide ${i+1}` });
+                }
+            }
+            
+            if(images.length === 0) throw new Error('Tidak ada slide foto');
+            framesList = images.slice(0, 9);
+            progressBar.style.width = '100%';
+            document.getElementById('multiFrameStatusText').innerHTML = `✅ Selesai! ${framesList.length} slide foto original`;
+            updateMissionPhoto();
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+                displayFramesGallery(framesList);
+                document.getElementById('multipleFramesResult').style.display = 'block';
+                showToast(`✅ ${framesList.length} slide foto berhasil diambil!`);
+            }, 500);
+        } catch(e) { 
+            loadingDiv.style.display = 'none'; 
+            showToast('❌ Gagal ambil slide foto. Pastikan video memiliki multiple slide.'); 
+        }
+        
+        isGeneratingFrames = false;
+        multiBtn.disabled = false;
+        multiBtn.innerHTML = '<i class="fas fa-images"></i> Ambil Slide Foto (Max 9)';
+    }
+    
+    function displayFramesGallery(frames) {
+        let gallery = document.getElementById('framesGallery');
+        document.getElementById('frameCount').innerText = `${frames.length} Slide`;
+        gallery.innerHTML = '';
+        frames.forEach((f, i) => {
+            let div = document.createElement('div'); div.className = 'gallery-item';
+            div.innerHTML = `<div class="frame-time">${f.label}</div><img src="${f.url}"><div class="frame-name">${f.label}</div><div class="download-single" onclick="event.stopPropagation(); downloadSingleFrame(${i})"><i class="fas fa-download"></i></div>`;
+            div.onclick = () => downloadSingleFrame(i);
+            gallery.appendChild(div);
+        });
+    }
+    function downloadSingleFrame(i) { let f = framesList[i]; if(f && f.blob) { let u = URL.createObjectURL(f.blob); let l = document.createElement('a'); l.href = u; l.download = f.name; l.click(); setTimeout(() => URL.revokeObjectURL(u), 100); showToast('✅ Gambar disimpan!'); } }
+    function downloadAllFrames() { if(!framesList || framesList.length === 0) { showToast('Tidak ada gambar'); return; } showToast(`📥 Mengunduh ${framesList.length} gambar...`); framesList.forEach((_, i) => { setTimeout(() => downloadSingleFrame(i), i * 400); }); }
+    function closeMultipleFrames() { document.getElementById('multipleFramesResult').style.display = 'none'; if(framesList) { framesList.forEach(f => { if(f.url && f.url.startsWith('blob:')) URL.revokeObjectURL(f.url); }); } framesList = []; }
+    function clearWatermarkLink() { document.getElementById('watermarkUrl').value = ''; document.getElementById('watermarkResult').classList.remove('active'); closeMultipleFrames(); }
+    
+    function handleVideoSelect() { let input = document.getElementById('videoFileInput'); if(input.files.length>0) selectedVideoFile = input.files[0]; }
+    function resetMP3() { document.getElementById('videoFileInput').value = ''; document.getElementById('mp3Result').classList.remove('active'); selectedVideoFile = null; }
+    async function convertToMP3() { 
+        if (checkMaintenance()) {
+            showToast('⏳ WaterTik sedang maintenance, coba lagi nanti.');
+            return;
+        }
+        if(!selectedVideoFile) { showToast('Pilih file video!'); return; }
+        if(currentUser?.blocked) { showToast('Perangkat diblokir!'); return; }
+        document.getElementById('mp3Loading').style.display = 'block'; 
+        try { 
+            let audioBlob = await extractAudio(selectedVideoFile); 
+            let audioUrl = URL.createObjectURL(audioBlob); 
+            document.getElementById('audioPreview').src = audioUrl; 
+            document.getElementById('mp3DownloadLink').href = audioUrl; 
+            let mp3Name = selectedVideoFile.name.replace(/\.[^/.]+$/,'')+'.mp3'; 
+            document.getElementById('mp3DownloadLink').setAttribute('download', mp3Name); 
+            document.getElementById('mp3FileName').innerText = selectedVideoFile.name;
+            document.getElementById('mp3FileSize').innerText = (audioBlob.size/1024/1024).toFixed(1)+' MB';
+            let audio = new Audio(audioUrl);
+            audio.onloadedmetadata = () => { let mins = Math.floor(audio.duration/60), secs = Math.floor(audio.duration%60); document.getElementById('mp3Duration').innerText = `${mins}:${secs.toString().padStart(2,'0')}`; };
+            document.getElementById('mp3Result').classList.add('active'); 
+            if(currentUser){ currentUser.totalMP3++; addToHistory('mp3', selectedVideoFile.name); saveUsers(); saveCurrentUser(); updateUI(); updateMissionMP3(); } 
+            showToast('✅ MP3 berhasil!'); 
+        } catch(e){ showToast('❌ Gagal konversi'); } 
+        document.getElementById('mp3Loading').style.display = 'none'; 
+    }
+    function extractAudio(file) { return new Promise((resolve, reject) => { let video = document.createElement('video'); let url = URL.createObjectURL(file); video.src = url; video.onloadedmetadata = () => { let ctx = new (window.AudioContext || window.webkitAudioContext)(); let source = ctx.createMediaElementSource(video); let dest = ctx.createMediaStreamDestination(); source.connect(dest); let recorder = new MediaRecorder(dest.stream); let chunks = []; recorder.ondataavailable = e => chunks.push(e.data); recorder.onstop = () => { let blob = new Blob(chunks, {type:'audio/mpeg'}); URL.revokeObjectURL(url); resolve(blob); }; recorder.start(); video.play().then(() => { setTimeout(() => { video.pause(); recorder.stop(); source.disconnect(); }, video.duration * 1000); }).catch(reject); }; video.onerror = reject; }); }
+    
+    async function pasteLinkToInput(inputId) { let target = document.getElementById(inputId); try { let text = await navigator.clipboard.readText(); if(text) { target.value = text.trim(); showToast('✅ Link di-paste!'); target.focus(); } } catch(e){ showToast('❌ Gagal paste'); } }
+    function switchMainTab(tabName) { document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active')); document.getElementById(`${tabName}Tab`).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); document.querySelector(`.nav-item[data-nav="${tabName}"]`).classList.add('active'); }
+    function openDashboard() { document.getElementById('dashboardModal').classList.add('active'); }
+    function closeDashboard() { document.getElementById('dashboardModal').classList.remove('active'); }
+    function openKontakPopup() { document.getElementById('kontakPopup').classList.add('active'); }
+    function closeKontakPopup() { document.getElementById('kontakPopup').classList.remove('active'); }
+    function openPremiumModal() { document.getElementById('premiumModal').classList.add('active'); }
+    function closePremiumModal() { document.getElementById('premiumModal').classList.remove('active'); }
+    function showToast(msg, duration = 2500) { let t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg; document.body.appendChild(t); setTimeout(() => t.remove(), duration); }
+    
+    setInterval(async () => { 
+        if(currentUser) { 
+            let blockedList = JSON.parse(localStorage.getItem('watertik_blocked')) || []; 
+            let isBlockedByName = blockedList.some(b => b.name === currentUser.name);
+            let isBlockedByFp = blockedList.some(b => b.fingerprint === currentUser.fingerprint);
+            let isBlockedNow = isBlockedByName || isBlockedByFp;
+            if(isBlockedNow && !currentUser.blocked) { 
+                currentUser.blocked = true; 
+                saveCurrentUser(); 
+                updateUI(); 
+                let reason = getBlockReason(currentUser.name, currentUser.fingerprint);
+                showBanPopup(reason);
+            } 
+        } 
+    }, 10000);
+    
+    setInterval(updateRateLimitDisplay, 1000);
+    setInterval(() => { checkMaintenance(); }, 3000);
+    
+    (async function init() { 
+        await getFingerprint(); 
+        await checkRamadhanReal(); 
+        setCurrentDate(); 
+        updateUI();
+        updateWinnersList();
+        updateRateLimitDisplay();
+        checkMaintenance();
+        updateUserIdDisplay();
+        
+        try {
+            const today = new Date();
+            const dateStr = `${today.getDate().toString().padStart(2,'0')}-${(today.getMonth()+1).toString().padStart(2,'0')}-${today.getFullYear()}`;
+            const res = await fetch(`https://api.aladhan.com/v1/gToH/${dateStr}`);
+            const data = await res.json();
+            if (data.code === 200 && data.data) {
+                const hijriYear = parseInt(data.data.hijri.year);
+                resetYearlyMissions(hijriYear);
+            }
+        } catch(e) {}
+    })();
+    
+    window.onclick = function(e) { 
+        if(e.target === document.getElementById('dashboardModal')) closeDashboard(); 
+        if(e.target === document.getElementById('kontakPopup')) closeKontakPopup(); 
+        if(e.target === document.getElementById('premiumModal')) closePremiumModal();
+        if(e.target === document.getElementById('winnerPopup')) closeWinnerPopup();
+        if(e.target === document.getElementById('banReasonPopup')) closeBanPopup();
+    };
+</script>
 </body>
 </html>
-<script>
-
-const SUPABASE_URL = 'https://rhvatyydmkveoymcchhu.supabase.co/rest/v1/';
-const SUPABASE_KEY = 'sb_publishable_yD81l2Fmp0mIQQ3CCgyVdQ_UtOsFSUw';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-
-let currentUser = null;
-let appMode = 'normal'; 
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    checkDeviceStatus();
-    loadUserData();
-    updateRamadhanUI();
-    setInterval(updateRamadhanUI, 60000); 
-});
-
-
-function generateUniqueId() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let id = 'WT-';
-    for(let i = 0; i < 8; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return id;
-}
-
-async function attemptLogin() {
-    const name = document.getElementById('loginName').value.trim();
-    if (!name) return showToast("Masukkan nama Anda!");
-
-    let userId = localStorage.getItem('watertik_id') || generateUniqueId();
-    
- 
-    const { data, error } = await supabase
-        .from('users')
-        .upsert({ 
-            user_id: userId, 
-            name: name, 
-            last_login: new Date(),
-            points: 0 
-        })
-        .select();
-
-    if (!error) {
-        localStorage.setItem('watertik_id', userId);
-        localStorage.setItem('watertik_name', name);
-        showToast("Login Berhasil!");
-        loadUserData();
-    } else {
-        showToast("Gagal terhubung ke server.");
-    }
-}
-
-function loadUserData() {
-    const userId = localStorage.getItem('watertik_id');
-    const name = localStorage.getItem('watertik_name');
-
-    if (userId) {
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('userInfoSection').style.display = 'block';
-        document.getElementById('userNameDisplay').innerText = name;
-        document.getElementById('akunUserIdValue').innerText = userId;
-        document.getElementById('userJoinDateDisplay').innerText = "ID: " + userId;
-    }
-}
-
--
-function updateRamadhanUI() {
-    const now = new Date();
-    const month = now.getMonth(); 
-    const date = now.getDate();
-    
-    const statusEl = document.getElementById('ramadhanStatus');
-    const countdownEl = document.getElementById('ramadhanCountdown');
-    const body = document.body;
-
-    
-    if (year === 2027) {
-        
-        if ((month === 1 && date >= 8) || (month === 2 && date <= 8)) {
-            appMode = 'ramadhan';
-            body.className = 'ramadhan';
-            statusEl.innerText = "Marhaban ya Ramadhan 2027 🌙";
-        } 
-            
-        else if (month === 2 && (date === 9 || date === 10)) {
-            appMode = 'lebaran';
-            body.className = 'lebaran';
-            statusEl.innerText = "Selamat Idul Fitri 1448H 🕌";
-        } 
-            
-        else {
-            appMode = 'normal';
-            body.className = '';
-            statusEl.innerText = "WaterTik - Video Downloader";
-        }
-    } else {
-        appMode = 'normal';
-        body.className = '';
-        statusEl.innerText = "WaterTik - Video Downloader";
-    }
-}
-    
-async function downloadVideo() {
-    const url = document.getElementById('tiktokUrl').value;
-    if (!url) return showToast("Masukkan Link TikTok!");
-    showToast("Memproses video...");
-    
-    try {
-        
-        const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
-        const result = await response.json();
-        
-        if (result.data) {
-            const data = result.data;
-            document.getElementById('videoThumb').src = data.cover;
-            document.getElementById('videoTitle').innerText = data.title || "Video TikTok";
-            document.getElementById('downloadLink').href = data.play; // Link video tanpa watermark
-            document.getElementById('videoResult').classList.add('active');
-            showToast("Video ditemukan!");
-        } else {
-            showToast("Gagal mengambil video. Pastikan link benar.");
-        }
-    } catch (e) {
-        showToast("Terjadi kesalahan koneksi.");
-    }
-}
-    
-async function generateWatermark() {
-    const url = document.getElementById('watermarkUrl').value;
-    if (!url) return showToast("Masukkan Link!");
-    showToast("Mengambil data gambar...");
-    
-}
-    
-function switchMainTab(tabName) {
-    document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    
-    const targetTab = document.getElementById(tabName + 'Tab');
-    if (targetTab) targetTab.classList.add('active');
-    
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-        if (item.onclick.toString().includes(tabName)) item.classList.add('active');
-    });
-}
-    
-function showToast(msg) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerText = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-    
-function copyUserId() {
-    const id = document.getElementById('akunUserIdValue').innerText;
-    navigator.clipboard.writeText(id);
-    showToast("ID Berhasil disalin!");
-}
-    
-function logout() {
-    localStorage.clear();
-    location.reload();
-}
-    
-async function checkDeviceStatus() {
-    const { data } = await supabase.from('settings').select('value').eq('key', 'maintenance').single();
-    if (data && data.value === 'true') {
-        document.getElementById('maintenanceOverlay').classList.add('active');
-    }
-}
-</script>
