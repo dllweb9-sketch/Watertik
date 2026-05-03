@@ -43,6 +43,7 @@
     <script>
         const SUPABASE_URL = 'https://rhvatyydmkveoymcchhu.supabase.co/rest/v1/';
         const SUPABASE_KEY = 'sb_publishable_yD81l2Fmp0mIQQ3CCgyVdQ_UtOsFSUw';
+        const supabaseInstance = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function kirimLaporan() {
     console.log("1. Fungsi kirimLaporan terpanggil");
@@ -58,7 +59,7 @@
 
     try {
         console.log("3. Sedang menembak ke Supabase...");
-        const { data, error } = await supabase
+        const { data, error } = await supabaseInstance
             .from('laporan')
             .insert([{ 
                 tipe_laporan: tipe, 
