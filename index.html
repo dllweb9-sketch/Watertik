@@ -44,25 +44,40 @@
         const SUPABASE_URL = 'https://rhvatyydmkveoymcchhu.supabase.co/rest/v1/';
         const SUPABASE_KEY = 'sb_publishable_yD81l2Fmp0mIQQ3CCgyVdQ_UtOsFSUw';
 
-        async function kirimLaporan(event) {
-            event.preventDefault();
-            const nama = document.getElementById('nama').value;
-            const masalah = document.getElementById('masalah').value;
-            const lokasi = document.getElementById('lokasi').value;
-            const { data, error } = await supabase
-      .from('laporan')
-      .insert([
-        { nama: nama, masalah: masalah, lokasi: lokasi, status: 'Pending' }
-      ]);
-            document.getElementById('formLaporan').addEventListener('submit', kirimLaporan);
+        async function kirimLaporan() {
+    console.log("1. Fungsi kirimLaporan terpanggil");
+    const tipe = document.getElementById('tipeLaporan').value;
+    const isi = document.getElementById('isiLaporan').value;
 
-    if (error) {
-      alert('Gagal mengirim: ' + error.message);
-    } else {
-      alert('Laporan berhasil dikirim!');
-      document.getElementById('formLaporan').reset();
+    console.log("2. Data yang dibaca:", { tipe, isi });
+
+    if (!isi) {
+        alert("Isi laporan tidak boleh kosong!");
+        return;
     }
-  }
+
+    try {
+        console.log("3. Sedang menembak ke Supabase...");
+        const { data, error } = await supabase
+            .from('laporan')
+            .insert([{ 
+                tipe_laporan: tipe, 
+                isi_pesan: isi 
+            }]);
+
+        if (error) {
+            console.error("4. Supabase menolak:", error.message);
+            alert("Gagal kirim: " + error.message);
+        } else {
+            console.log("4. Berhasil dikirim!");
+            alert("Laporan berhasil dikirim!");
+            toggleReportModal();
+        }
+    } catch (err) {
+        console.error("5. Error fatal:", err);
+        alert("Terjadi kesalahan sistem.");
+    }
+}
             
     </script>
     <style>
